@@ -1,6 +1,6 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { Home, Menu } from "lucide-react-native";
+import { Home, Menu, TableProperties } from "lucide-react-native";
 import { colors } from "../../constants/colors";
 
 export default () => {
@@ -9,7 +9,8 @@ export default () => {
       screenOptions={{
         tabBarInactiveBackgroundColor: colors.white,
         tabBarActiveBackgroundColor: colors.primary,
-        tabBarActiveTintColor: colors.secondary
+        tabBarActiveTintColor: colors.secondary,
+        tabBarShowLabel: false
       }}
     >
       <Tabs.Screen
@@ -30,7 +31,7 @@ export default () => {
             color: colors.white
           },
           headerTitle: 'Dịch vụ',
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <TableProperties size={size} color={color} />,
         }}
       ></Tabs.Screen>
       <Tabs.Screen

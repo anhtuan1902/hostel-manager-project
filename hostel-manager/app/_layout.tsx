@@ -16,7 +16,7 @@ const InitialLayout = () => {
     if (fontsLoaded) {
       // Hide the splash screen after the fonts have loaded (or an error was returned) and the UI is ready.
       SplashScreen.hideAsync();
-      router.replace("/home");
+      router.replace("/login");
     }
   }, [fontsLoaded, ]);
 

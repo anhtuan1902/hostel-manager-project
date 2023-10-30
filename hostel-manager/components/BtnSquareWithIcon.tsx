@@ -39,7 +39,7 @@ const ButtonSquareWithIcon: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   containerBtn: {
-    marginTop: 10,
+    margin: 10,
     backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",

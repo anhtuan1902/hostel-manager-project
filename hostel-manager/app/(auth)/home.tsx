@@ -6,8 +6,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { UserCircle2 } from "lucide-react-native";
 import { ButtonRectangleWithIcon } from "../../components/BtnRectangleWithIcon";
 import { ScrollView } from "react-native-gesture-handler";
+import { useRouter } from "expo-router";
 
 export default function home() {
+  const router = useRouter()
   const tap = () => {};
 
   return (
@@ -81,7 +83,7 @@ export default function home() {
             height={60}
             width={300}
             title="Quản lí phòng"
-            onTap={tap}
+            onTap={() => { router.push('/room') }}
           />
           <ButtonRectangleWithIcon
             icon="Users2"

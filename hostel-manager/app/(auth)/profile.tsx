@@ -24,7 +24,7 @@ const profile = () => {
           </View>
           <View>
           <Text style={{ fontSize: 25 }}>Tran Anh Tuan</Text>
-          <Text style={{ fontSize: 16, width: 125 }}>Tran Anh Tuan</Text>
+          <Text style={{ fontSize: 16 }}>Tran Anh Tuan</Text>
           </View>
         </View>
       </View>

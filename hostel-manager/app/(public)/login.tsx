@@ -10,19 +10,20 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { User2, LockKeyhole } from "lucide-react-native";
 import { colors } from "../../constants/colors";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { TextField } from "../../components/TextField";
 import { ButtonWithTitle } from "../../components/BtnWithTitle";
 import InputWithIcon from "../../components/InputWithIcon";
 
 export default function login() {
   const [isVisbile, setIsVisbile] = useState(true);
-
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const tap = () => {
+  const router = useRouter();
 
+  const tap = () => {
+    router.push('/home');
   }
 
   return (
