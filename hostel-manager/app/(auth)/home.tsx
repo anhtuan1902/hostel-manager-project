@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Alert, Image } from "react-native";
 import React from "react";
+import { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
 import { colors } from "../../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -7,10 +8,60 @@ import { UserCircle2 } from "lucide-react-native";
 import { ButtonRectangleWithIcon } from "../../components/BtnRectangleWithIcon";
 import { ScrollView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
+import { Session } from "@supabase/supabase-js";
+import { supabase } from "../../utils/supabase";
 
 export default function home() {
+  const [loading, setLoading] = useState(true);
+  const [fullname, setFullname] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  const [session, setSession] = useState<Session | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (session)
+    getProfile();
+  }, [session]);
+
   const router = useRouter()
   const tap = () => {};
+
+  async function getProfile() {
+    try {
+      setLoading(true);
+      if (!session?.user) throw new Error("No user on the session!");
+
+      const { data, error, status } = await supabase
+        .from("profiles")
+        .select("fullname, avatar_url")
+        .eq("id", session?.user.id)
+        .single();
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setFullname(data.fullname);
+        setAvatarUrl(data.avatar_url);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -42,15 +93,14 @@ export default function home() {
                 fontWeight: "500",
               }}
             >
-              Tran Anh Tuan
+              {fullname}
             </Text>
           </View>
 
-          <UserCircle2
-            size={32}
-            style={{ flex: 1, marginRight: 30 }}
-            color="black"
-          />
+          <Image
+                source={{ uri: avatarUrl }}
+                style={{ width: 50, height: 50, borderRadius: 50, marginEnd: 20 }}
+              />
         </View>
         <View></View>
       </SafeAreaView>

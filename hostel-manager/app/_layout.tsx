@@ -1,35 +1,43 @@
-import { Slot, useRouter, SplashScreen } from "expo-router";
+import { Slot, useRouter, SplashScreen, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
+import { AuthProvider, useAuth } from "../provider/AuthProvider";
 
 SplashScreen.preventAutoHideAsync();
 
 const InitialLayout = () => {
+  const { session, initialized } = useAuth();
+  const segments = useSegments();
   const router = useRouter();
-
   const [fontsLoaded] = useFonts({
     "open-sans": require("../assets/fonts/OpenSans-Regular.ttf"),
     "open-sans-bold": require("../assets/fonts/OpenSans-Bold.ttf"),
   });
-
   useEffect(() => {
-    if (fontsLoaded) {
-      // Hide the splash screen after the fonts have loaded (or an error was returned) and the UI is ready.
+    if (!initialized && !fontsLoaded) return;
+
+    // Check if the path/url is in the (auth) group
+    const inAuthGroup = segments[0] === "(auth)";
+
+    if (session && !inAuthGroup && fontsLoaded) {
+      // Redirect authenticated users to the list page
+      router.replace("/home");
+    } else if (!session && fontsLoaded) {
+      // Redirect unauthenticated users to the login page
       SplashScreen.hideAsync();
       router.replace("/login");
     }
-  }, [fontsLoaded, ]);
-
-  // Prevent rendering until the font has loaded or an error was returned
-  if (!fontsLoaded ) {
-    return null;
-  }
+  }, [session, initialized, fontsLoaded]);
 
   return <Slot />;
 };
 
 const RootLayout = () => {
-  return <InitialLayout />;
+  return (
+    <AuthProvider>
+      <InitialLayout />
+    </AuthProvider>
+  );
 };
 
 export default RootLayout;

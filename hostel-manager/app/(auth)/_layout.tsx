@@ -10,7 +10,10 @@ export default () => {
         tabBarInactiveBackgroundColor: colors.white,
         tabBarActiveBackgroundColor: colors.primary,
         tabBarActiveTintColor: colors.secondary,
-        tabBarShowLabel: false
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          flex: 0,
+        }
       }}
     >
       <Tabs.Screen

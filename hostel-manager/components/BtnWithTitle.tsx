@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   StyleSheet,
-  View,
   Text,
   TouchableOpacity
 } from "react-native";
@@ -10,15 +9,18 @@ import { colors } from "../constants/colors";
 interface ButtonProps {
   onTap: Function;
   title: string;
+  disabled?: boolean;
 }
 
 const ButtonWithTitle: React.FC<ButtonProps> = ({
   onTap,
   title,
+  disabled = false
 }) => {
   return (
-    <TouchableOpacity style={styles.btn} onPress={() => onTap()}>
-      <Text style={{ fontSize: 20 }}>{title}</Text>
+    <TouchableOpacity style={styles.btn} onPress={() => onTap()} disabled={disabled}>
+      <Text style={{ fontSize: 20, 
+    fontFamily: 'open-sans' }}>{title}</Text>
     </TouchableOpacity>
   );
 };
@@ -34,6 +36,7 @@ const styles = StyleSheet.create({
     margin: 20,
     paddingLeft: 50,
     paddingRight: 50,
+    width: 320,
   },
 });
 

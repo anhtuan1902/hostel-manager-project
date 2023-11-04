@@ -4,26 +4,32 @@ import {
   StyleSheet,
   Image,
   Pressable,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { User2, LockKeyhole } from "lucide-react-native";
 import { colors } from "../../constants/colors";
-import { Link, useRouter } from "expo-router";
-import { TextField } from "../../components/TextField";
+import { Link } from "expo-router";
 import { ButtonWithTitle } from "../../components/BtnWithTitle";
 import InputWithIcon from "../../components/InputWithIcon";
+import { supabase } from "../../utils/supabase";
 
 export default function login() {
-  const [isVisbile, setIsVisbile] = useState(true);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const router = useRouter();
+  async function signInWithEmail() {
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
 
-  const tap = () => {
-    router.push('/home');
+    if (error) Alert.alert(error.message);
+
+    setLoading(false);
   }
 
   return (
@@ -36,20 +42,38 @@ export default function login() {
         />
       </SafeAreaView>
       <View style={styles.body}>
-        <Text style={{ fontSize: 30, marginTop: 40, marginBottom: 20 }}>
+        <Text style={{ fontSize: 30, marginTop: 40, marginBottom: 20, fontFamily: 'open-sans' }}>
           Đăng nhập
         </Text>
-        <InputWithIcon placeholder="Tài khoản đăng nhập" onTextChange={setUsername} colorIcon='black' sizeIcon={32} icon='User2'  />
-        <InputWithIcon placeholder="Mật khẩu" onTextChange={setPassword} isPassword={true} isSecure={true} colorIcon='black' sizeIcon={32} icon='LockKeyhole'/>
-        <ButtonWithTitle title="Đăng nhập" onTap={tap}/>
+        <InputWithIcon
+          placeholder="Tài khoản đăng nhập"
+          onTextChange={setEmail}
+          colorIcon="black"
+          sizeIcon={32}
+          icon="User2"
+        />
+        <InputWithIcon
+          placeholder="Mật khẩu"
+          onTextChange={setPassword}
+          isPassword={true}
+          isSecure={true}
+          colorIcon="black"
+          sizeIcon={32}
+          icon="LockKeyhole"
+        />
+        <ButtonWithTitle
+          title="Đăng nhập"
+          onTap={signInWithEmail}
+          disabled={loading}
+        />
         <Link href="/reset" asChild>
           <Pressable style={styles.linkBtn}>
-            <Text>Forgot password?</Text>
+            <Text>Quên mật khẩu?</Text>
           </Pressable>
         </Link>
-        <Link href="/register" asChild>
+        <Link href="/register" disabled={loading} asChild>
           <Pressable style={styles.linkBtn}>
-            <Text>Create Account</Text>
+            <Text>Tạo tài khoản mới</Text>
           </Pressable>
         </Link>
       </View>
@@ -95,5 +119,6 @@ const styles = StyleSheet.create({
   linkBtn: {
     margin: 8,
     alignItems: "center",
+    fontFamily: 'open-sans'
   },
 });

@@ -1,35 +1,48 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Button, ScrollView } from "react-native";
+import { useState, useEffect } from "react";
 import React from "react";
 import { colors } from "../../constants/colors";
 import { StatusBar } from "expo-status-bar";
-import { SafeAreaView } from "react-native-safe-area-context";
-import InputWithIcon from "../../components/InputWithIcon";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "../../components/Icon";
-import { ButtonWithTitle } from "../../components/BtnWithTitle";
+import { useAuth } from "../../provider/AuthProvider";
+import { supabase } from "../../utils/supabase";
+import { Session } from "@supabase/supabase-js";
+import Account from "../../components/Account";
 
 const profile = () => {
+  const { signOut } = useAuth();
+  const [session, setSession] = useState<Session | null>(null);
 
-  const tap = () => {
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
 
-  }
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={colors.primary} style="light" />
       <View style={styles.body}>
-        <View style={styles.containerBtn}>
-          <View style={{ marginRight: 60 }}>
-            <Icon name="User" size={60} color="black" />
-          </View>
-          <View>
-          <Text style={{ fontSize: 25 }}>Tran Anh Tuan</Text>
-          <Text style={{ fontSize: 16 }}>Tran Anh Tuan</Text>
-          </View>
+        <View>
+        {session && session.user ? (
+            <Account key={session.user.id} session={session} />
+          ) : (
+            <></>
+          )}
         </View>
       </View>
       <View style={styles.foorer}>
-        <ButtonWithTitle title="Dang xuat" onTap={tap} />
+        <TouchableOpacity style={styles.btn} onPress={signOut}>
+          <Icon name="LogOut" size={30} color={colors.white} />
+          <View>
+            <Text style={{ color: colors.white, fontSize: 20 }}>Đăng xuất</Text>
+          </View>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -40,7 +53,7 @@ export default profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: 20
+    marginHorizontal: 30,
   },
   navigation: {
     flex: 2,
@@ -50,25 +63,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   body: {
-    flex: 7,
     alignItems: "center",
   },
   foorer: {
-    flex: 1,
+    flex: 2
   },
-  containerBtn: {
-    marginTop: 17,
+  
+  btn: {
+    fontFamily: "open-sans",
     flexDirection: "row",
-    backgroundColor: "#fff",
-    width: 350,
-    height: 200,
+    height: 50,
+    borderRadius: 30,
+    backgroundColor: colors.primary,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 20,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    margin: 20,
+    paddingLeft: 50,
+    paddingRight: 50,
   },
 });

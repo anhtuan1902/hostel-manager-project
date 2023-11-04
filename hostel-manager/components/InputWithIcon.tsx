@@ -52,5 +52,7 @@ const styles = StyleSheet.create({
     marginRight: 30,
     paddingLeft: 20,
     paddingRight: 10,
+    width: 320,
+    fontFamily: 'open-sans'
   },
 });
