@@ -36,8 +36,8 @@ const ButtonRectangleWithIcon: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   containerBtn: {
-    marginTop: 15,
-    marginBottom: 10,
+    marginTop: 10,
+    marginBottom: 8,
     flexDirection: "row",
     backgroundColor: "#fff",
     width: 300,

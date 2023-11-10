@@ -42,7 +42,7 @@ const Register = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar />
-      <ScrollView style={{ flex: 1, paddingTop: 20 }}>
+      <ScrollView style={{ flex: 1, paddingTop: 70 }}>
         <View
           style={{
             paddingHorizontal: 10,
@@ -58,7 +58,7 @@ const Register = () => {
               fontWeight: "500",
               marginBottom: 10,
               marginTop: 10,
-              fontFamily: "open-sans",
+              fontFamily: "open-sans-bold",
             }}
           >
             Đăng kí

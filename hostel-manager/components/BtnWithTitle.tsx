@@ -20,7 +20,7 @@ const ButtonWithTitle: React.FC<ButtonProps> = ({
   return (
     <TouchableOpacity style={styles.btn} onPress={() => onTap()} disabled={disabled}>
       <Text style={{ fontSize: 20, 
-    fontFamily: 'open-sans' }}>{title}</Text>
+    fontFamily: 'open-sans', color: colors.white }}>{disabled ? "Loading ..." : title}</Text>
     </TouchableOpacity>
   );
 };

@@ -20,8 +20,6 @@ export default function Account({ session }: { session: Session }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [fullname, setFullname] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const { user } = useAuth();
-  const [selectedImage, setSelectedImage] = useState("");
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -30,7 +28,7 @@ export default function Account({ session }: { session: Session }) {
     });
 
     if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri);
+      setAvatarUrl(result.assets[0].uri);
     } else {
       alert("You did not select any image.");
     }
@@ -109,12 +107,7 @@ export default function Account({ session }: { session: Session }) {
       <View style={styles.containerBtn}>
         <View style={{ marginRight: 70, width: 70 }}>
           <TouchableOpacity onPress={pickImageAsync}>
-            {selectedImage ? (
-              <Image
-                source={{ uri: selectedImage }}
-                style={{ width: 110, height: 120, borderRadius: 50 }}
-              />
-            ) : avatarUrl ? (
+            { false ? (
               <Image
                 source={{ uri: avatarUrl }}
                 style={{ width: 110, height: 120, borderRadius: 50 }}
@@ -156,7 +149,7 @@ export default function Account({ session }: { session: Session }) {
             updateProfile({
               fullname: fullname,
               phone_number: phoneNumber,
-              avatar_url: selectedImage,
+              avatar_url: avatarUrl,
             })
           }
           disabled={loading}
@@ -172,7 +165,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
   },
   mt20: {
-    width: 320,
+    width: 350,
   },
   containerBtn: {
     marginTop: 17,

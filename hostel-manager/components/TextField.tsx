@@ -11,13 +11,15 @@ interface TextFieldProps {
   isSecure?: boolean;
   onTextChange: Function;
   isPassword?: boolean;
+  value?: string;
 }
 
 export const TextField: React.FC<TextFieldProps> = ({
   placeholder,
   isSecure = false,
   isPassword = false,
-  onTextChange,
+  value,
+  onTextChange
 }) => {
   const [isVisbile, setIsVisbile] = useState(isSecure);
 
@@ -32,6 +34,7 @@ export const TextField: React.FC<TextFieldProps> = ({
         autoCapitalize="none"
         onChangeText={(text) => onTextChange(text)}
         secureTextEntry={isVisbile}
+        value={value}
         style={styles.textField}
       />
       {isPassword == true ? (

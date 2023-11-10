@@ -1,28 +1,14 @@
-import { StyleSheet, Text, View, Button, ScrollView } from "react-native";
-import { useState, useEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { colors } from "../../constants/colors";
+import { colors } from "../../../constants/colors";
 import { StatusBar } from "expo-status-bar";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import Icon from "../../components/Icon";
-import { useAuth } from "../../provider/AuthProvider";
-import { supabase } from "../../utils/supabase";
-import { Session } from "@supabase/supabase-js";
-import Account from "../../components/Account";
+import Icon from "../../../components/Icon";
+import { useAuth } from "../../../provider/AuthProvider";
+import Account from "../../../components/Account";
 
 const profile = () => {
-  const { signOut } = useAuth();
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-  }, []);
+  const { session, signOut } = useAuth();
 
   return (
     <View style={styles.container}>
@@ -53,7 +39,7 @@ export default profile;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginHorizontal: 30,
+    marginHorizontal: 20,
   },
   navigation: {
     flex: 2,
@@ -66,7 +52,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   foorer: {
-    flex: 2
+    flex: 1,
   },
   
   btn: {
@@ -80,5 +66,6 @@ const styles = StyleSheet.create({
     margin: 20,
     paddingLeft: 50,
     paddingRight: 50,
+    marginTop: 50,
   },
 });

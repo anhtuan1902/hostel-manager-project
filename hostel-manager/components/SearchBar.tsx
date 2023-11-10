@@ -1,11 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   StyleSheet,
   View,
-  Text,
-  TouchableOpacity,
   TextInput,
-  Image,
 } from "react-native";
 import Icon from "./Icon";
 
@@ -14,6 +11,7 @@ interface SearchBarProps {
   didTouch?: any | undefined;
   autoFocus?: boolean | undefined;
   onTextChange: Function;
+  placeholder: string;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
@@ -21,6 +19,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   didTouch,
   autoFocus = false,
   onTextChange,
+  placeholder
 }) => {
   return (
     <View style={styles.container}>
@@ -33,7 +32,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             fontSize: 20,
             height: 42,
           }}
-          placeholder={"Tìm kiếm dịch vụ"}
+          placeholder={placeholder}
           autoFocus={autoFocus}
           onTouchStart={didTouch}
           onChangeText={(text) => onTextChange(text)}
@@ -50,7 +49,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignContent: "center",
-    marginTop: 20,
+    marginTop: 10,
   },
   searchBar: {
     display: "flex",

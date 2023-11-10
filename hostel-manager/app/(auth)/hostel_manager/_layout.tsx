@@ -1,19 +1,33 @@
 import React from "react";
 import { TouchableOpacity, Text, View } from "react-native";
 import { Stack, router } from "expo-router";
-import { colors } from "../../constants/colors";
+import { colors } from "../../../constants/colors";
 
-const ChildLayout = () => {
+const HostelLayout = () => {
   return (
-    <Stack screenOptions={{ headerShown: true }}>
+    <Stack screenOptions={{ headerShown: true, headerTitleStyle: {fontFamily: 'open-sans'}, }}>
       <Stack.Screen
-        name="room"
+        name="index"
         options={{
-          headerTitle: "Quản lí phòng",
+          headerTitleAlign: 'center',
+          headerStyle:{
+            backgroundColor: colors.primary
+          },
+          headerTitleStyle:{
+            color: colors.white
+          },
+          headerTitle: 'Nhà trọ',
+        }}
+      ></Stack.Screen>
+      <Stack.Screen
+        name="add_hostels"
+        options={{
+          headerTitle: "Thêm nhà trọ",
           headerTitleAlign: "center",
           headerStyle: {
             backgroundColor: colors.primary,
           },
+          presentation: "modal",
           headerTintColor: colors.white,
           headerLeft: () => (
             <TouchableOpacity
@@ -34,8 +48,14 @@ const ChildLayout = () => {
           ),
         }}
       ></Stack.Screen>
+      <Stack.Screen
+        name="detail_hostel"
+        options={{
+          headerShown: false
+        }}
+      ></Stack.Screen>
     </Stack>
   );
 };
 
-export default ChildLayout;
+export default HostelLayout;

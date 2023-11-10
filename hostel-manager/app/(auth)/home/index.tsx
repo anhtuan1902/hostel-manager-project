@@ -2,43 +2,29 @@ import { View, Text, StyleSheet, Alert, Image } from "react-native";
 import React from "react";
 import { useState, useEffect } from "react";
 import { StatusBar } from "expo-status-bar";
-import { colors } from "../../constants/colors";
+import { colors } from "../../../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserCircle2 } from "lucide-react-native";
-import { ButtonRectangleWithIcon } from "../../components/BtnRectangleWithIcon";
+import { ButtonRectangleWithIcon } from "../../../components/BtnRectangleWithIcon";
 import { ScrollView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
-import { Session } from "@supabase/supabase-js";
-import { supabase } from "../../utils/supabase";
+import { supabase } from "../../../utils/supabase";
+import { useAuth } from "../../../provider/AuthProvider";
 
 export default function home() {
-  const [loading, setLoading] = useState(true);
   const [fullname, setFullname] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-
-  const [session, setSession] = useState<Session | null>(null);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-    });
-
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-  }, []);
+  const { session } = useAuth();
 
   useEffect(() => {
-    if (session)
-    getProfile();
+    if (session) getProfile();
   }, [session]);
 
-  const router = useRouter()
+  const router = useRouter();
   const tap = () => {};
-
+  
   async function getProfile() {
     try {
-      setLoading(true);
       if (!session?.user) throw new Error("No user on the session!");
 
       const { data, error, status } = await supabase
@@ -58,8 +44,6 @@ export default function home() {
       if (error instanceof Error) {
         Alert.alert(error.message);
       }
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -71,16 +55,17 @@ export default function home() {
           style={{
             flexDirection: "row",
             justifyContent: "space-between",
-            marginBottom: 50,
             marginTop: 20,
+            marginBottom: 20
           }}
         >
           <View style={{ flexDirection: "column", flex: 1 }}>
             <Text
               style={{
-                fontSize: 13,
+                fontSize: 14,
                 marginStart: 30,
-                color: colors.tertiary,
+                color: colors.white,
+                fontFamily:'open-sans'
               }}
             >
               Xin chao,
@@ -89,20 +74,36 @@ export default function home() {
               style={{
                 fontSize: 13,
                 marginStart: 30,
-                color: colors.secondary,
+                color: colors.white,
                 fontWeight: "500",
+                fontFamily:'open-sans-bold'
               }}
             >
               {fullname}
             </Text>
           </View>
-
-          <Image
-                source={{ uri: avatarUrl }}
-                style={{ width: 50, height: 50, borderRadius: 50, marginEnd: 20 }}
-              />
+          {false ? (
+            <Image
+              source={{ uri: avatarUrl }}
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 50,
+                marginEnd: 20,
+              }}
+            />
+          ) : (
+            <UserCircle2
+              size={32}
+              style={{ flex: 1, marginRight: 30 }}
+              color="black"
+            />
+          )}
         </View>
-        <View></View>
+        <Image
+          source={require("/TTS/hostel-manager-project/hostel-manager/assets/image/logo.png")}
+          style={{ height: 60, width: 60, marginBottom: 10  }}
+        />
       </SafeAreaView>
       <View style={styles.body}>
         <View style={styles.containerCard}>
@@ -113,27 +114,41 @@ export default function home() {
               marginBottom: 15,
             }}
           >
-            <View>
-              <Text style={styles.cardNumber}>Số phòng hiện có</Text>
+            <View style={{ width: 120 }}>
+              <Text style={styles.cardNumber}>Số tòa nhà hiện có</Text>
               <Text style={styles.cardNumber}>0</Text>
             </View>
-            <View>
+            <View style={{ width: 120 }}>
               <Text style={styles.cardNumber}>Số người thuê</Text>
               <Text style={styles.cardNumber}>0</Text>
             </View>
           </View>
-          <Text style={styles.cardNumber}>Số phòng trống hiện có</Text>
-          <Text style={styles.cardNumber}>0</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-around",
+              marginBottom: 15,
+            }}
+          >
+            <View style={{ width: 120 }}>
+              <Text style={styles.cardNumber}>Số phòng hiện có</Text>
+              <Text style={styles.cardNumber}>0</Text>
+            </View>
+            <View style={{ width: 120 }}>
+              <Text style={styles.cardNumber}>Số phòng trống</Text>
+              <Text style={styles.cardNumber}>0</Text>
+            </View>
+          </View>
         </View>
-        <ScrollView style={{}}>
+        <View style={{ marginTop: 10 }}>
           <ButtonRectangleWithIcon
-            icon="Home"
+            icon="TableProperties"
             colorIcon="black"
             sizeIcon={24}
             height={60}
             width={300}
-            title="Quản lí phòng"
-            onTap={() => { router.push('/room') }}
+            title="Quản lí dịch vụ"
+            onTap={tap}
           />
           <ButtonRectangleWithIcon
             icon="Users2"
@@ -171,7 +186,7 @@ export default function home() {
             title="Quản lí báo cáo"
             onTap={tap}
           />
-        </ScrollView>
+        </View>
       </View>
     </View>
   );
@@ -212,9 +227,10 @@ const styles = StyleSheet.create({
   },
 
   cardNumber: {
-    fontSize: 14,
+    fontSize: 13,
     color: "#023047",
     alignSelf: "center",
     marginTop: 10,
+    fontFamily:'open-sans-bold'
   },
 });

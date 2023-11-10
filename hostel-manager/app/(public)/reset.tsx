@@ -1,67 +1,143 @@
-import { View, StyleSheet, TextInput, Button, Text } from 'react-native';
-import React, { useState } from 'react';
-import { Stack } from 'expo-router';
-import { colors } from '../../constants/colors';
+import { View, StyleSheet, TextInput, Button, Text, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Stack, router } from "expo-router";
+import { colors } from "../../constants/colors";
+import { supabase } from "../../utils/supabase";
 
 const PwReset = () => {
-  const [emailAddress, setEmailAddress] = useState('');
-  const [password, setPassword] = useState('');
-  const [code, setCode] = useState('');
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [successfulCreation, setSuccessfulCreation] = useState(false);
 
+  useEffect(() => {
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event == "PASSWORD_RECOVERY") {
+        setSuccessfulCreation(true);
+      }
+    });
+  }, []);
+
   // Request a passowrd reset code by email
-//   const onRequestReset = async () => {
-//     try {
-//       await signIn.create({
-//         strategy: 'reset_password_email_code',
-//         identifier: emailAddress,
-//       });
-//       setSuccessfulCreation(true);
-//     } catch (err: any) {
-//       alert(err.errors[0].message);
-//     }
-//   };
+  const onRequestReset = async () => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(emailAddress);
+      if (error) {
+        console.log("Không tồn tại email đăng kí!", error);
+      }
+    } catch (err: any) {
+      alert(err.errors[0].message);
+    }
+  };
 
-//   // Reset the password with the code and the new password
-//   const onReset = async () => {
-//     try {
-//       const result = await signIn.attemptFirstFactor({
-//         strategy: 'reset_password_email_code',
-//         code,
-//         password,
-//       });
-//       console.log(result);
-//       alert('Password reset successfully');
+  // Reset the password with the code and the new password
+  const onReset = async () => {
+    try {
+      if (password === passwordConfirm) {
+        const { data, error } = await supabase.auth.updateUser({
+          password: password,
+        });
 
-//       // Set the user session active, which will log in the user automatically
-//       await setActive({ session: result.createdSessionId });
-//     } catch (err: any) {
-//       alert(err.errors[0].message);
-//     }
-//   };
+        if (data) {
+          router.push("/login");
+          Alert.alert("Cập nhật mật khẩu thành công!");
+        }
+        if (error) alert("Có lỗi gì đó khi cập nhật mật khẩu! Thử lại sau!");
+      } else {
+        Alert.alert("Mật khẩu không khớp với nhau!");
+      }
+    } catch (err: any) {
+      Alert.alert(err.errors[0].message);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Stack.Screen options={{ headerBackVisible: !successfulCreation }} />
-        
+
       {!successfulCreation && (
         <>
-            <Text style={{fontSize: 30, marginBottom: 20}}>Xác thực Email</Text>
-          <TextInput autoCapitalize="none" placeholder="abc@gmail.com" value={emailAddress} onChangeText={setEmailAddress} style={styles.inputField} />
-        {/* onPress={onRequestReset} */}
-          <Button  title="Gửi email xác nhận" color={colors.primary}></Button>
+          <Text
+            style={{
+              fontSize: 30,
+              marginBottom: 20,
+              fontFamily: "open-sans-bold",
+              color: colors.primary,
+            }}
+          >
+            Xác thực Email
+          </Text>
+          <TextInput
+            autoCapitalize="none"
+            placeholder="abc@gmail.com"
+            value={emailAddress}
+            onChangeText={setEmailAddress}
+            style={styles.inputField}
+          />
+
+          <View style={{ marginTop: 20 }}>
+            <Button
+              onPress={onRequestReset}
+              title="Gửi email xác nhận"
+              color={colors.primary}
+            ></Button>
+          </View>
+          <View style={{ marginTop: 20 }}>
+            <Button
+              title="quay lại"
+              onPress={() => {
+                router.back();
+              }}
+              color={colors.primary}
+            ></Button>
+          </View>
         </>
       )}
 
       {successfulCreation && (
         <>
           <View>
-          <Text style={{fontSize: 30, marginBottom: 20}}>Nhập lại mật khẩu mới</Text>
-            <TextInput value={code} placeholder="Mã xác thực" style={styles.inputField} onChangeText={setCode} />
-            <TextInput placeholder="Mật khẩu mới" value={password} onChangeText={setPassword} secureTextEntry style={styles.inputField} />
+            <Text
+              style={{
+                fontSize: 30,
+                marginBottom: 20,
+                fontFamily: "open-sans-bold",
+                color: colors.primary,
+              }}
+            >
+              Nhập lại mật khẩu mới
+            </Text>
+            <TextInput
+              value={password}
+              placeholder="Nhập mật khẩu mới"
+              style={styles.inputField}
+              secureTextEntry
+              onChangeText={setPassword}
+            />
+            <TextInput
+              placeholder="Nhập lại mật khẩu mới"
+              value={passwordConfirm}
+              onChangeText={setPasswordConfirm}
+              secureTextEntry
+              style={styles.inputField}
+            />
           </View>
-          {/* onPress={onReset} */}
-          <Button  title="Set new Password" color={colors.primary}></Button>
+          <View style={{ marginTop: 20 }}>
+            <Button
+              onPress={onReset}
+              title="Đặt mật khẩu mới"
+              color={colors.primary}
+            ></Button>
+          </View>
+          <View style={{ marginTop: 20 }}>
+            <Button
+              title="quay lại"
+              onPress={() => {
+                router.back();
+              }}
+              color={colors.primary}
+            ></Button>
+          </View>
         </>
       )}
     </View>
@@ -71,7 +147,7 @@ const PwReset = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: 20,
   },
   inputField: {
@@ -80,12 +156,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 4,
     padding: 10,
-    backgroundColor: '#fff',
-    marginBottom: 20
+    backgroundColor: "#fff",
+    marginBottom: 20,
   },
   button: {
     margin: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
 });
 

@@ -42,7 +42,7 @@ export default function login() {
         />
       </SafeAreaView>
       <View style={styles.body}>
-        <Text style={{ fontSize: 30, marginTop: 40, marginBottom: 20, fontFamily: 'open-sans' }}>
+        <Text style={{ fontSize: 42, marginTop: 40, marginBottom: 20, fontFamily: 'open-sans-bold', color:colors.primary }}>
           Đăng nhập
         </Text>
         <InputWithIcon

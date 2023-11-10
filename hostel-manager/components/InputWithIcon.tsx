@@ -11,6 +11,7 @@ interface Props {
   icon: any;
   colorIcon: any;
   sizeIcon: any;
+  value?: any;
 }
 
 const InputWithIcon: React.FC<Props> = ({
@@ -20,7 +21,8 @@ const InputWithIcon: React.FC<Props> = ({
   icon,
   colorIcon,
   sizeIcon,
-  onTextChange,
+  value,
+  onTextChange
 }) => {
   return (
     <View style={styles.containerInput}>
@@ -32,6 +34,7 @@ const InputWithIcon: React.FC<Props> = ({
         onTextChange={onTextChange}
         isPassword={isPassword}
         isSecure={isSecure}
+        value={value}
       />
     </View>
   );
@@ -42,8 +45,7 @@ export default InputWithIcon;
 const styles = StyleSheet.create({
   containerInput: {
     flexDirection: "row",
-    height: 50,
-    borderRadius: 30,
+    borderRadius: 20,
     backgroundColor: "#DBDBDB",
     justifyContent: "center",
     alignItems: "center",
