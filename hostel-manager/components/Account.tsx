@@ -6,6 +6,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { Button, Input } from "react-native-elements";
 import { Session } from "@supabase/supabase-js";
@@ -14,29 +15,52 @@ import { colors } from "../constants/colors";
 import Icon from "./Icon";
 import * as ImagePicker from "expo-image-picker";
 import { useAuth } from "../provider/AuthProvider";
+import * as FileSystem from "expo-file-system";
+import { decode } from "base64-arraybuffer";
 
 export default function Account({ session }: { session: Session }) {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [fullname, setFullname] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
+
+  useEffect(() => {
+    getProfile();
+  }, []);
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setAvatarUrl(result.assets[0].uri);
+      const img = result.assets[0];
+      const base64 = await FileSystem.readAsStringAsync(img.uri, {
+        encoding: "base64",
+      });
+      const filePath = `${user!.id}/${new Date().getTime()}.png`;
+      const contentType = "image/png";
+      await supabase.storage.from("files").upload(filePath, decode(base64), {
+        contentType,
+      });
+
+      await supabase.storage
+      .from("files")
+      .download(filePath)
+      .then(( {data} ) => {
+        const fr = new FileReader();
+        fr.readAsDataURL(data!);
+        fr.onload = () => {
+          setAvatarUrl(fr.result as string);
+        };
+      });
     } else {
       alert("You did not select any image.");
     }
   };
-
-  useEffect(() => {
-    getProfile();
-  }, []);
 
   async function getProfile() {
     try {
@@ -86,7 +110,6 @@ export default function Account({ session }: { session: Session }) {
         avatar_url: avatar_url,
         updated_at: new Date(),
       };
-      console.log(updates);
 
       const { error } = await supabase.from("profiles").upsert(updates);
 
@@ -107,7 +130,7 @@ export default function Account({ session }: { session: Session }) {
       <View style={styles.containerBtn}>
         <View style={{ marginRight: 70, width: 70 }}>
           <TouchableOpacity onPress={pickImageAsync}>
-            { avatarUrl ? (
+            {avatarUrl ? (
               <Image
                 source={{ uri: avatarUrl }}
                 style={{ width: 110, height: 120, borderRadius: 50 }}
@@ -124,37 +147,39 @@ export default function Account({ session }: { session: Session }) {
           </Text>
         </View>
       </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input label="Email" value={session?.user?.email} disabled />
-      </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input
-          label="Họ và tên"
-          value={fullname || ""}
-          onChangeText={(text) => setFullname(text)}
-        />
-      </View>
-      <View style={[styles.verticallySpaced, styles.mt20]}>
-        <Input
-          label="Số điện thoại"
-          value={phoneNumber || ""}
-          onChangeText={(text) => setPhoneNumber(text)}
-        />
-      </View>
-      <View style={{ width: 100 }}>
-        <Button
-          title={loading ? "Loading ..." : "Cập nhật"}
-          buttonStyle={{ backgroundColor: colors.primary, marginStart: 10 }}
-          onPress={() =>
-            updateProfile({
-              fullname: fullname,
-              phone_number: phoneNumber,
-              avatar_url: avatarUrl,
-            })
-          }
-          disabled={loading}
-        />
-      </View>
+      <ScrollView>
+        <View style={[styles.verticallySpaced, styles.mt20]}>
+          <Input label="Email" value={session?.user?.email} disabled />
+        </View>
+        <View style={[styles.verticallySpaced, styles.mt20]}>
+          <Input
+            label="Họ và tên"
+            value={fullname || ""}
+            onChangeText={(text) => setFullname(text)}
+          />
+        </View>
+        <View style={[styles.verticallySpaced, styles.mt20]}>
+          <Input
+            label="Số điện thoại"
+            value={phoneNumber || ""}
+            onChangeText={(text) => setPhoneNumber(text)}
+          />
+        </View>
+        <View style={{ width: 100 }}>
+          <Button
+            title={loading ? "Loading ..." : "Cập nhật"}
+            buttonStyle={{ backgroundColor: colors.primary, marginStart: 10 }}
+            onPress={() =>
+              updateProfile({
+                fullname: fullname,
+                phone_number: phoneNumber,
+                avatar_url: avatarUrl,
+              })
+            }
+            disabled={loading}
+          />
+        </View>
+      </ScrollView>
     </>
   );
 }

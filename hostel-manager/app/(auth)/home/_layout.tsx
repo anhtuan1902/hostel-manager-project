@@ -1,7 +1,5 @@
 import React from "react";
-import { TouchableOpacity, Text, View } from "react-native";
-import { Stack, router } from "expo-router";
-import { colors } from "../../../constants/colors";
+import { Stack } from "expo-router";
 
 const HomeLayout = () => {
   return (

@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
   },
   body: {
     alignItems: "center",
+    flex: 6,
   },
   foorer: {
     flex: 1,
@@ -66,6 +67,5 @@ const styles = StyleSheet.create({
     margin: 20,
     paddingLeft: 50,
     paddingRight: 50,
-    marginTop: 50,
   },
 });

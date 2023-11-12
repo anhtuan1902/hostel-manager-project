@@ -17,6 +17,8 @@ import { ScrollView } from "react-native-gesture-handler";
 import { colors } from "../../../../constants/colors";
 import InputWithIcon from "../../../../components/InputWithIcon";
 import { Button } from "react-native-elements";
+import * as FileSystem from "expo-file-system";
+import { decode } from "base64-arraybuffer";
 
 const add_lessee = () => {
   const router = useRouter();
@@ -29,12 +31,32 @@ const add_lessee = () => {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setImageUrl(result.assets[0].uri);
+      const img = result.assets[0];
+      const base64 = await FileSystem.readAsStringAsync(img.uri, {
+        encoding: "base64",
+      });
+      const filePath = `${user!.id}/${new Date().getTime()}.png`;
+      const contentType = "image/png";
+      await supabase.storage.from("files").upload(filePath, decode(base64), {
+        contentType,
+      });
+
+      await supabase.storage
+      .from("files")
+      .download(filePath)
+      .then(( {data} ) => {
+        const fr = new FileReader();
+        fr.readAsDataURL(data!);
+        fr.onload = () => {
+          setImageUrl(fr.result as string);
+        };
+      });
     } else {
       alert("You did not select any image.");
     }

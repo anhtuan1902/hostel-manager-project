@@ -21,6 +21,7 @@ const InitialLayout = () => {
 
     if (session && !inAuthGroup && fontsLoaded) {
       // Redirect authenticated users to the list page
+      SplashScreen.hideAsync();
       router.replace("/home");
     } else if (!session && fontsLoaded) {
       // Redirect unauthenticated users to the login page
