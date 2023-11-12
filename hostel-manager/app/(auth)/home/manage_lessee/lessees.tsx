@@ -6,42 +6,44 @@ import {
   Text,
   Image,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import { SearchBar } from "../../../components/SearchBar";
+import { SearchBar } from "../../../../components/SearchBar";
 import { FlatList } from "react-native-gesture-handler";
-import { colors } from "../../../constants/colors";
+import { colors } from "../../../../constants/colors";
 import { StatusBar } from "expo-status-bar";
-import Icon from "../../../components/Icon";
+import Icon from "../../../../components/Icon";
 import { useRouter } from "expo-router";
-import { supabase } from "../../../utils/supabase";
-import { useAuth } from "../../../provider/AuthProvider";
-import { Hostel } from "../../../provider/Database";
+import { supabase } from "../../../../utils/supabase";
+import { useAuth } from "../../../../provider/AuthProvider";
+import { Hostel } from "../../../../provider/Database";
 
-const hostel_manager = () => {
+const manage_lessee = () => {
   const [search, setSearch] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [listHostel, setListHostel] = useState<Hostel[]>([]);
+  const [listLessee, setListLessee] = useState<Hostel[]>([]);
   const { user } = useAuth();
 
   useEffect(() => {
-    getHostels();
+    getLessee();
   }, []);
 
-  async function getHostels() {
+  async function getLessee() {
     try {
       if (!user) throw new Error("No user on the session!");
 
       const { data, error, status } = await supabase
-        .from("hostels")
+        .from("manage_lessee")
         .select("*")
-        .eq("owner_id", user.id);
+        .eq("created_by", user.id);
+
       if (error && status !== 406) {
         throw error;
       }
       if (data) {
-        setListHostel(data);
+        setListLessee(data);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -54,49 +56,79 @@ const hostel_manager = () => {
 
   const renderItem = (item: any) => {
     return (
-      <TouchableOpacity
-        style={styles.containerBtn}
-        onPress={() => {
-          router.push({
-            pathname: "/hostel_manager/detail_hostel",
-            params: { id: item.item.id },
-          });
-        }}
-      >
-        <View style={{ width: 150, height: 100 }}>
-          {item.item.image_url ? (
-            <Image
-              source={{ uri: item.item.image_url }}
+      <ScrollView>
+        <TouchableOpacity
+          style={styles.containerBtn}
+          onPress={() => {
+            router.push({
+              pathname: "/home/manage_lessee/detail_lessee",
+              params: { id: item.item.id },
+            });
+          }}
+        >
+          <View style={{ height: 150, width: 130 }}>
+            {item.item.image_url ? (
+              <Image
+                source={{ uri: item.item.image_url }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  borderTopLeftRadius: 20,
+                  borderBottomLeftRadius: 20,
+                }}
+              />
+            ) : (
+              <View
+                style={{
+                  height: "100%",
+                  alignSelf: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Icon name={"User"} size={55} color={"black"} />
+              </View>
+            )}
+          </View>
+          <View
+            style={{
+              alignItems: "flex-start",
+              justifyContent: "center",
+              width: 190,
+            }}
+          >
+            <Text
               style={{
-                width: "100%",
-                height: "100%",
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
-              }}
-            />
-          ) : (
-            <View
-              style={{
-                height: "100%",
-                alignSelf: "center",
-                justifyContent: "center",
+                paddingStart: 30,
+                fontSize: 14,
+                marginBottom: 10,
+                fontFamily: "open-sans-bold",
               }}
             >
-              <Icon name={"Building2"} size={55} color={"black"} />
-            </View>
-          )}
-        </View>
-        <Text style={{ fontSize: 14, margin: 5, fontFamily:'open-sans-bold' }}>
-          {item.item.name.length > 12
-            ? `${item.item.name.substring(0, 12)}...`
-            : item.item.name}
-        </Text>
-        <Text style={{ fontSize: 10, marginBottom: 5, fontFamily:'open-sans' }}>
-          {item.item.address.length > 18
-            ? `${item.item.address.substring(0, 18)}...`
-            : item.item.address}
-        </Text>
-      </TouchableOpacity>
+              {item.item.name}
+            </Text>
+            <Text
+              style={{
+                paddingStart: 30,
+                fontSize: 10,
+                marginBottom: 10,
+                fontFamily: "open-sans",
+              }}
+            >
+              {item.item.citizen_id}
+            </Text>
+            <Text
+              style={{
+                paddingStart: 30,
+                fontSize: 10,
+                marginBottom: 10,
+                fontFamily: "open-sans",
+              }}
+            >
+              {item.item.phone_number}
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
     );
   };
 
@@ -104,15 +136,16 @@ const hostel_manager = () => {
     <View style={styles.container}>
       <StatusBar backgroundColor={colors.primary} style="light" />
       <View style={styles.body}>
-        <SearchBar placeholder="Tìm kiếm nhà trọ" onTextChange={setSearch} />
+        <SearchBar placeholder="Tìm kiếm người thuê" onTextChange={setSearch} />
+
         {loading ? (
           <ActivityIndicator color={colors.primary} animating={loading} />
         ) : (
           <FlatList
-            data={listHostel}
+            data={listLessee}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
-            numColumns={2}
+            numColumns={1}
           />
         )}
       </View>
@@ -124,7 +157,7 @@ const hostel_manager = () => {
             borderRadius: 50,
           }}
           onPress={() => {
-            router.push("/hostel_manager/add_hostels");
+            router.push("/home/manage_lessee/add_lessee");
           }}
         >
           <Icon name="Plus" color={colors.white} size={50} />
@@ -134,7 +167,7 @@ const hostel_manager = () => {
   );
 };
 
-export default hostel_manager;
+export default manage_lessee;
 
 const styles = StyleSheet.create({
   container: {
@@ -161,7 +194,7 @@ const styles = StyleSheet.create({
   },
   containerCard: {
     backgroundColor: "#fff",
-    width: 350,
+    width: 320,
     height: 180,
     justifyContent: "center",
     borderRadius: 10,
@@ -180,8 +213,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   containerBtn: {
-    margin: 10,
+    marginTop: 10,
+    marginBottom: 8,
+    flexDirection: "row",
     backgroundColor: "#fff",
+    width: 320,
+    height: 150,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
@@ -190,7 +227,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
-    width: 150,
-    height: 150,
   },
 });

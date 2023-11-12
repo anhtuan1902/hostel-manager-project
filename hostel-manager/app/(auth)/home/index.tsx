@@ -157,7 +157,7 @@ export default function home() {
             height={60}
             width={300}
             title="Quản lí thông tin người thuê"
-            onTap={tap}
+            onTap={() => {router.push('/home/manage_lessee')}}
           />
           <ButtonRectangleWithIcon
             icon="ClipboardSignature"

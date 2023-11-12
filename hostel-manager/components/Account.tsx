@@ -107,7 +107,7 @@ export default function Account({ session }: { session: Session }) {
       <View style={styles.containerBtn}>
         <View style={{ marginRight: 70, width: 70 }}>
           <TouchableOpacity onPress={pickImageAsync}>
-            { false ? (
+            { avatarUrl ? (
               <Image
                 source={{ uri: avatarUrl }}
                 style={{ width: 110, height: 120, borderRadius: 50 }}

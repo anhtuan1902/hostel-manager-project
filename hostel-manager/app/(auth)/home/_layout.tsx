@@ -12,6 +12,12 @@ const HomeLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="manage_lessee"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };
