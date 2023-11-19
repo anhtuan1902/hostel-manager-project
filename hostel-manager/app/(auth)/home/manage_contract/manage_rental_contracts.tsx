@@ -17,32 +17,35 @@ import Icon from "../../../../components/Icon";
 import { useRouter } from "expo-router";
 import { supabase } from "../../../../utils/supabase";
 import { useAuth } from "../../../../provider/AuthProvider";
-import { Lessee } from "../../../../provider/Database";
+import { Contract } from "../../../../provider/Database";
 
-const manage_lessee = () => {
+const manage_rental_contracts = () => {
   const [search, setSearch] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [listLessee, setListLessee] = useState<Lessee[]>([]);
+  const [listContract, setListContract] = useState<Contract[]>([]);
   const { user } = useAuth();
 
   useEffect(() => {
-    getLessee();
+    getRentalContract();
   }, []);
 
-  async function getLessee() {
+  async function getRentalContract() {
     try {
       if (!user) throw new Error("No user on the session!");
 
       const { data, error, status } = await supabase
-        .from("manage_lessee")
-        .select("*")
-        .eq("created_by", user.id);
+        .from("manage_rental_contract")
+        .select(
+          "*, manage_lessee(id, name), hostels(id, name, owner_id), rooms(id, name)"
+        )
+        .eq("hostels.owner_id", user.id);
+
       if (error && status !== 406) {
         throw error;
       }
       if (data) {
-        setListLessee(data);
+        setListContract(data);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -60,71 +63,80 @@ const manage_lessee = () => {
           style={styles.containerBtn}
           onPress={() => {
             router.push({
-              pathname: "/home/manage_lessee/detail_lessee",
+              pathname: "/home/manage_contract/detail_contract",
               params: { id: item.item.id },
             });
           }}
         >
-          <View style={{ height: 150, width: 130 }}>
-            {item.item.image_url ? (
-              <Image
-                source={{ uri: item.item.image_url }}
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  borderTopLeftRadius: 20,
-                  borderBottomLeftRadius: 20,
-                }}
-              />
-            ) : (
-              <View
-                style={{
-                  height: "100%",
-                  alignSelf: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Icon name={"User"} size={55} color={"black"} />
-              </View>
-            )}
-          </View>
-          <View
-            style={{
-              alignItems: "flex-start",
-              justifyContent: "center",
-              width: 190,
-            }}
-          >
+          <View>
             <Text
               style={{
                 paddingStart: 30,
-                fontSize: 14,
+                fontSize: 16,
                 marginBottom: 10,
                 fontFamily: "open-sans-bold",
               }}
             >
-              {item.item.name}
+              #{item.item.id}
             </Text>
-            <Text
+            <View
               style={{
                 paddingStart: 30,
-                fontSize: 10,
                 marginBottom: 10,
-                fontFamily: "open-sans",
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
-              {item.item.citizen_id}
-            </Text>
-            <Text
+              <Icon name={"Hotel"} color={"black"} size={20} />
+              <Text
+                style={{
+                  paddingStart: 10,
+                  fontSize: 14,
+                  fontFamily: "open-sans",
+                }}
+              >
+                {item.item.rooms.name} - {item.item.hostels.name}
+              </Text>
+            </View>
+            <View
               style={{
                 paddingStart: 30,
-                fontSize: 10,
                 marginBottom: 10,
-                fontFamily: "open-sans",
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
-              {item.item.phone_number}
-            </Text>
+              <Icon name={"CalendarDays"} color={"black"} size={20} />
+              <Text
+                style={{
+                  paddingStart: 10,
+                  fontSize: 14,
+                  fontFamily: "open-sans",
+                }}
+              >
+                Từ {item.item.start_date.toString().substring(0, 10)} đến{" "}
+                {item.item.expired_date.toString().substring(0, 10)}
+              </Text>
+            </View>
+            <View
+              style={{
+                paddingStart: 30,
+                marginBottom: 10,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Icon name={"User"} color={"black"} size={20} />
+              <Text
+                style={{
+                  paddingStart: 10,
+                  fontSize: 14,
+                  fontFamily: "open-sans",
+                }}
+              >
+                Nguời thuê: {item.item.manage_lessee.name}
+              </Text>
+            </View>
           </View>
         </TouchableOpacity>
       </ScrollView>
@@ -135,13 +147,13 @@ const manage_lessee = () => {
     <View style={styles.container}>
       <StatusBar backgroundColor={colors.primary} style="light" />
       <View style={styles.body}>
-        <SearchBar placeholder="Tìm kiếm người thuê" onTextChange={setSearch} />
+        <SearchBar placeholder="Tìm kiếm mã hợp đồng" onTextChange={setSearch} />
 
         {loading ? (
           <ActivityIndicator color={colors.primary} animating={loading} />
         ) : (
           <FlatList
-            data={listLessee}
+            data={listContract}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             numColumns={1}
@@ -156,7 +168,7 @@ const manage_lessee = () => {
             borderRadius: 50,
           }}
           onPress={() => {
-            router.push("/home/manage_lessee/add_lessee");
+            router.push("/home/manage_contract/add_contract");
           }}
         >
           <Icon name="Plus" color={colors.white} size={50} />
@@ -166,7 +178,7 @@ const manage_lessee = () => {
   );
 };
 
-export default manage_lessee;
+export default manage_rental_contracts;
 
 const styles = StyleSheet.create({
   container: {
@@ -218,7 +230,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     width: 320,
     height: 150,
-    justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
     elevation: 5,

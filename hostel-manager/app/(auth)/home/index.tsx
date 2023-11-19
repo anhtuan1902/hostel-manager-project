@@ -6,7 +6,6 @@ import { colors } from "../../../constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UserCircle2 } from "lucide-react-native";
 import { ButtonRectangleWithIcon } from "../../../components/BtnRectangleWithIcon";
-import { ScrollView } from "react-native-gesture-handler";
 import { useRouter } from "expo-router";
 import { supabase } from "../../../utils/supabase";
 import { useAuth } from "../../../provider/AuthProvider";
@@ -101,7 +100,7 @@ export default function home() {
           )}
         </View>
         <Image
-          source={require("/TTS/hostel-manager-project/hostel-manager/assets/image/logo.png")}
+          source={require("../../../assets/image/logo.png")}
           style={{ height: 60, width: 60, marginBottom: 10  }}
         />
       </SafeAreaView>
@@ -166,7 +165,7 @@ export default function home() {
             height={60}
             width={300}
             title="Quản lí hợp đồng"
-            onTap={tap}
+            onTap={() => {router.push('/home/manage_contract')}}
           />
           <ButtonRectangleWithIcon
             icon="Wallet"

@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Pressable,
-  Alert,
-} from "react-native";
+import { View, Text, StyleSheet, Image, Pressable, Alert } from "react-native";
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,13 +15,18 @@ export default function login() {
 
   async function signInWithEmail() {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-    });
+    if (email && password) {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
-    if (error) Alert.alert(error.message);
+      if (error) Alert.alert(error.message);
 
+      
+    }else{
+      Alert.alert("Vui lòng nhập tài khoản hoặc mật khẩu!!!");
+    }
     setLoading(false);
   }
 
@@ -37,12 +35,20 @@ export default function login() {
       <StatusBar backgroundColor={colors.primary} style="light" />
       <SafeAreaView style={styles.navigation}>
         <Image
-          source={require("/TTS/hostel-manager-project/hostel-manager/assets/image/logo.png")}
+          source={require("../../assets/image/logo.png")}
           style={{ height: 80, width: 80, marginBottom: 20 }}
         />
       </SafeAreaView>
       <View style={styles.body}>
-        <Text style={{ fontSize: 42, marginTop: 40, marginBottom: 20, fontFamily: 'open-sans-bold', color:colors.primary }}>
+        <Text
+          style={{
+            fontSize: 42,
+            marginTop: 40,
+            marginBottom: 20,
+            fontFamily: "open-sans-bold",
+            color: colors.primary,
+          }}
+        >
           Đăng nhập
         </Text>
         <InputWithIcon
@@ -119,6 +125,6 @@ const styles = StyleSheet.create({
   linkBtn: {
     margin: 8,
     alignItems: "center",
-    fontFamily: 'open-sans'
+    fontFamily: "open-sans",
   },
 });

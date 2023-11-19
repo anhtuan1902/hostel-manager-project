@@ -95,7 +95,7 @@ const add_lessee = () => {
     }
   };
 
-  async function create_lessee({
+  async function update_lessee({
     name,
     citizen_id,
     phoneNumber,
@@ -121,17 +121,38 @@ const add_lessee = () => {
           name: name,
           citizen_id: citizen_id,
           phone_number: phoneNumber,
-          image_url: image_url,
-          created_by: user.id,
+          image_url: image_url
         };
 
-        const { error } = await supabase.from("manage_lessee").update(data);
+        const { error } = await supabase.from("manage_lessee").update(data).eq('created_by', user.id);
 
         if (error) {
           throw console.log(error);
         } else {
           router.replace("/home/manage_lessee");
+          Alert.alert("Bạn đã cập nhật thành công");
         }
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function delete_hostel(id: any) {
+    try {
+      setLoading(true);
+
+      const { error } = await supabase.from("manage_lessee").delete().eq('id', id);;
+
+      if (error) {
+        throw console.log(error);
+      } else {
+        router.replace("/home/manage_lessee");
+        Alert.alert("Bạn đã xóa thành công");
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -164,20 +185,9 @@ const add_lessee = () => {
               fontFamily: "open-sans",
             }}
           >
-            Nhà trọ
+            Thông tin chi tiết
           </Text>
-          <Text
-            style={{
-              fontSize: 14,
-              fontWeight: "400",
-              color: "grey",
-              marginTop: 5,
-              marginBottom: 10,
-              fontFamily: "open-sans",
-            }}
-          >
-            Nhập vào thông tin cần thiết để tạo người thuê
-          </Text>
+          
           {image_url ? (
             <TouchableOpacity
               style={[
@@ -260,7 +270,7 @@ const add_lessee = () => {
             }}
             titleStyle={{ fontFamily: "open-sans" }}
             onPress={() =>
-              create_lessee({
+              update_lessee({
                 name: name,
                 citizen_id: citizen_id,
                 phoneNumber: phoneNumber,
@@ -268,6 +278,19 @@ const add_lessee = () => {
               })
             }
           />
+          <Button
+              title={loading ? "Loading ..." : "Xóa người thuê"}
+              onPress={() => delete_hostel(id)}
+              buttonStyle={{
+                backgroundColor: colors.primary,
+                width: 320,
+                height: 50,
+                borderRadius: 30,
+                marginTop: 20,
+              }}
+              titleStyle={{ fontFamily: "open-sans" }}
+              disabled={loading}
+            />
         </View>
       </ScrollView>
     </SafeAreaView>
