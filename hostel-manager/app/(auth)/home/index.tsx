@@ -9,19 +9,27 @@ import { ButtonRectangleWithIcon } from "../../../components/BtnRectangleWithIco
 import { useRouter } from "expo-router";
 import { supabase } from "../../../utils/supabase";
 import { useAuth } from "../../../provider/AuthProvider";
+import { Contract, Hostel, Lessee, Room } from "../../../provider/Database";
 
 export default function home() {
   const [fullname, setFullname] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
-  const { session } = useAuth();
+  const { user, session } = useAuth();
+  const [listLessee, setListLessee] = useState<Lessee[]>([]);
+  const [listHostel, setListHostel] = useState<Hostel[]>([]);
+  const [listRoom, setListRoom] = useState<Room[]>([]);
+  const [listContract, setListContract] = useState<Contract[]>([]);
 
   useEffect(() => {
-    if (session) getProfile();
+    if (session) {
+      getProfile();
+      getData();
+    }
   }, [session]);
 
   const router = useRouter();
   const tap = () => {};
-  
+
   async function getProfile() {
     try {
       if (!session?.user) throw new Error("No user on the session!");
@@ -46,6 +54,49 @@ export default function home() {
     }
   }
 
+  async function getData() {
+    try {
+      if (!user) throw new Error("No user on the session!");
+
+      const { data: lessees } = await supabase
+        .from("manage_lessee")
+        .select("*")
+        .eq("created_by", user.id);
+
+      const { data: hostels } = await supabase
+        .from("hostels")
+        .select("*")
+        .eq("owner_id", user.id);
+
+      const { data: rooms } = await supabase
+        .from("rooms")
+        .select("*, hostels(id, owner_id)")
+        .eq("hostels.owner_id", user.id);
+
+      const { data: contracts } = await supabase
+        .from("manage_rental_contract")
+        .select("*, rooms(id), hostels(id, owner_id)")
+        .eq("hostels.owner_id", user.id);
+
+      if (lessees) {
+        setListLessee(lessees);
+      }
+      if (hostels) {
+        setListHostel(hostels);
+      }
+      if (rooms) {
+        setListRoom(rooms);
+      }
+      if (contracts) {
+        setListContract(contracts);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    }
+  }
+
   return (
     <View style={styles.container}>
       <StatusBar backgroundColor={colors.primary} style="light" />
@@ -55,7 +106,7 @@ export default function home() {
             flexDirection: "row",
             justifyContent: "space-between",
             marginTop: 20,
-            marginBottom: 20
+            marginBottom: 20,
           }}
         >
           <View style={{ flexDirection: "column", flex: 1 }}>
@@ -64,7 +115,7 @@ export default function home() {
                 fontSize: 14,
                 marginStart: 30,
                 color: colors.white,
-                fontFamily:'open-sans'
+                fontFamily: "open-sans",
               }}
             >
               Xin chao,
@@ -75,13 +126,13 @@ export default function home() {
                 marginStart: 30,
                 color: colors.white,
                 fontWeight: "500",
-                fontFamily:'open-sans-bold'
+                fontFamily: "open-sans-bold",
               }}
             >
               {fullname}
             </Text>
           </View>
-          {false ? (
+          {avatarUrl ? (
             <Image
               source={{ uri: avatarUrl }}
               style={{
@@ -101,7 +152,7 @@ export default function home() {
         </View>
         <Image
           source={require("../../../assets/image/logo.png")}
-          style={{ height: 60, width: 60, marginBottom: 10  }}
+          style={{ height: 60, width: 60, marginBottom: 10 }}
         />
       </SafeAreaView>
       <View style={styles.body}>
@@ -115,11 +166,11 @@ export default function home() {
           >
             <View style={{ width: 120 }}>
               <Text style={styles.cardNumber}>Số tòa nhà hiện có</Text>
-              <Text style={styles.cardNumber}>0</Text>
+              <Text style={styles.cardNumber}>{listHostel.length}</Text>
             </View>
             <View style={{ width: 120 }}>
               <Text style={styles.cardNumber}>Số người thuê</Text>
-              <Text style={styles.cardNumber}>0</Text>
+              <Text style={styles.cardNumber}>{listLessee.length}</Text>
             </View>
           </View>
           <View
@@ -131,11 +182,11 @@ export default function home() {
           >
             <View style={{ width: 120 }}>
               <Text style={styles.cardNumber}>Số phòng hiện có</Text>
-              <Text style={styles.cardNumber}>0</Text>
+              <Text style={styles.cardNumber}>{listRoom.length}</Text>
             </View>
             <View style={{ width: 120 }}>
               <Text style={styles.cardNumber}>Số phòng trống</Text>
-              <Text style={styles.cardNumber}>0</Text>
+              <Text style={styles.cardNumber}>{listRoom.length - listContract.length}</Text>
             </View>
           </View>
         </View>
@@ -156,7 +207,9 @@ export default function home() {
             height={60}
             width={300}
             title="Quản lí thông tin người thuê"
-            onTap={() => {router.push('/home/manage_lessee')}}
+            onTap={() => {
+              router.push("/home/manage_lessee");
+            }}
           />
           <ButtonRectangleWithIcon
             icon="ClipboardSignature"
@@ -165,7 +218,9 @@ export default function home() {
             height={60}
             width={300}
             title="Quản lí hợp đồng"
-            onTap={() => {router.push('/home/manage_contract')}}
+            onTap={() => {
+              router.push("/home/manage_contract");
+            }}
           />
           <ButtonRectangleWithIcon
             icon="Wallet"
@@ -230,6 +285,6 @@ const styles = StyleSheet.create({
     color: "#023047",
     alignSelf: "center",
     marginTop: 10,
-    fontFamily:'open-sans-bold'
+    fontFamily: "open-sans-bold",
   },
 });
