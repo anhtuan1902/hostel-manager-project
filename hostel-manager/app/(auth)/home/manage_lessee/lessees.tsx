@@ -141,7 +141,7 @@ const manage_lessee = () => {
           <ActivityIndicator color={colors.primary} animating={loading} />
         ) : (
           <FlatList
-            data={listLessee}
+            data={listLessee.filter( lessee => lessee.name.toLowerCase().includes(search.toLowerCase()) || lessee.citizen_id.includes(search))}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             numColumns={1}

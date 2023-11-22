@@ -136,8 +136,8 @@ export default function home() {
             <Image
               source={{ uri: avatarUrl }}
               style={{
-                width: 50,
-                height: 50,
+                width: 35,
+                height: 35,
                 borderRadius: 50,
                 marginEnd: 20,
               }}

@@ -16,14 +16,18 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.giaosutuoi20.hostelmanager"
+      "bundleIdentifier": "com.giaosutuoi20.hostelmanager",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFCC67"
       },
-      "package": "com.giaosutuoi20.hostelmanager"
+      "package": "com.giaosutuoi20.hostelmanager",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -46,6 +50,9 @@
       "eas": {
         "projectId": "92d1dc69-c50b-4c48-a2b5-f9790528f3ba"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/92d1dc69-c50b-4c48-a2b5-f9790528f3ba"
     }
   }
 }

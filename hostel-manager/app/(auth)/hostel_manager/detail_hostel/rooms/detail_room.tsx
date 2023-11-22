@@ -194,7 +194,7 @@ const detail_room = () => {
               fontFamily: "open-sans",
             }}
           >
-            Nhập vào thông tin cần thiết để tạo phòng trọ
+            Thông tin chi tiết của phòng trọ
           </Text>
           {image_url ? (
             <TouchableOpacity
@@ -284,7 +284,7 @@ const detail_room = () => {
           </View>
           <View style={{ marginBottom: 30 }}>
             <Button
-              title={loading ? "Loading ..." : "Cập nhật nhà trọ"}
+              title={loading ? "Loading ..." : "Cập nhật phòng trọ"}
               buttonStyle={{
                 backgroundColor: colors.primary,
                 width: 320,
@@ -304,7 +304,7 @@ const detail_room = () => {
               disabled={loading}
             />
             <Button
-              title={loading ? "Loading ..." : "Xóa nhà trọ"}
+              title={loading ? "Loading ..." : "Xóa phòng trọ"}
               onPress={() => delete_hostel(id)}
               buttonStyle={{
                 backgroundColor: colors.primary,

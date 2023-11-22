@@ -131,7 +131,7 @@ const add_lessee = () => {
               fontFamily: "open-sans",
             }}
           >
-            Nhà trọ
+            Thêm người thuê
           </Text>
           <Text
             style={{
@@ -152,7 +152,7 @@ const add_lessee = () => {
                 {
                   width: 320,
                   marginTop: 10,
-                  marginBottom: 20,
+                  marginBottom: 10,
                   borderRadius: 20,
                   height: 320,
                   justifyContent: "center",
@@ -177,7 +177,7 @@ const add_lessee = () => {
                 {
                   width: 320,
                   marginTop: 10,
-                  marginBottom: 20,
+                  marginBottom: 10,
                   borderRadius: 20,
                   height: 50,
                   justifyContent: "center",

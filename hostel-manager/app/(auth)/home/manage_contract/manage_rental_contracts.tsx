@@ -153,7 +153,7 @@ const manage_rental_contracts = () => {
           <ActivityIndicator color={colors.primary} animating={loading} />
         ) : (
           <FlatList
-            data={listContract}
+            data={listContract.filter( contract => contract.id.toString().includes(search))}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             numColumns={1}

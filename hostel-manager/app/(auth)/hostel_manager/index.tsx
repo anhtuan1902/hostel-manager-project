@@ -109,7 +109,7 @@ const hostel_manager = () => {
           <ActivityIndicator color={colors.primary} animating={loading} />
         ) : (
           <FlatList
-            data={listHostel}
+            data={listHostel.filter(hostel => hostel.name.toLowerCase().includes(search.toLowerCase()))}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             numColumns={2}

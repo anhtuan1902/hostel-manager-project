@@ -108,12 +108,12 @@ const rooms = () => {
     <View style={styles.container}>
       <StatusBar backgroundColor={colors.primary} style="light" />
       <View style={styles.body}>
-      <SearchBar placeholder="Tìm kiếm nhà trọ" onTextChange={setSearch} />
+      <SearchBar placeholder="Tìm kiếm phòng trọ" onTextChange={setSearch} />
         {loading ? (
           <ActivityIndicator color={colors.primary} animating={loading} />
         ) : (
           <FlatList
-            data={listRoom}
+            data={listRoom.filter(room => room.name.toLowerCase().includes(search.toLowerCase()))}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
             numColumns={2}

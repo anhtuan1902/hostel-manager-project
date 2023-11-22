@@ -5,7 +5,8 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "channel": "development"
     },
     "preview": {
       "android": {
@@ -17,19 +18,24 @@
       "env": {
         "SUPABASE_URL": "https://fzjkqujtimbtevyabuyn.supabase.co",
         "SUSABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ6amtxdWp0aW1idGV2eWFidXluIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg2ODU2NzEsImV4cCI6MjAxNDI2MTY3MX0.Dbi79B2o1BoANO1x52Pr77CARssaTpuB88frao7BATw"
-      }
+      },
+      "channel": "preview"
     },
     "preview2": {
       "android": {
         "gradleCommand": ":app:assembleRelease"
-      }
+      },
+      "channel": "preview2"
     },
     "preview3": {
-      "developmentClient": true
+      "developmentClient": true,
+      "channel": "preview3"
     },
-    "production": {}
+    "production": {
+      "channel": "production"
+    }
   },
   "submit": {
     "production": {}
   }
-} 
+}

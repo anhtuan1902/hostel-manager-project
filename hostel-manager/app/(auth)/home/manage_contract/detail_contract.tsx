@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import { useAuth } from "../../../../provider/AuthProvider";
 import * as ImagePicker from "expo-image-picker";
@@ -29,9 +30,9 @@ const add_lessee = () => {
   const { user } = useAuth();
   const params = useLocalSearchParams();
   const { id } = params;
-  const VND = new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
+  const VND = new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
   });
 
   useEffect(() => {
@@ -93,151 +94,156 @@ const add_lessee = () => {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar />
       <ScrollView style={{ flex: 1, marginBottom: 20 }}>
-        <View
-          style={{
-            paddingHorizontal: 10,
-            marginTop: 10,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Text
+        {loading ? (
+          <ActivityIndicator color={colors.primary} animating={loading} />
+        ) : (
+          <View
             style={{
-              color: colors.primary,
-              fontSize: 42,
-              fontWeight: "500",
-              marginBottom: 10,
+              paddingHorizontal: 10,
               marginTop: 10,
-              fontFamily: "open-sans",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            Thông tin chi tiết
-          </Text>
-          <View style={{ marginTop: 30 }}>
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            <Text
+              style={{
+                color: colors.primary,
+                fontSize: 42,
+                fontWeight: "500",
+                marginBottom: 10,
+                marginTop: 10,
+                fontFamily: "open-sans",
+              }}
             >
-              <Text
+              Thông tin chi tiết
+            </Text>
+            <View style={{ marginTop: 30 }}>
+              <View
                 style={{
-                  paddingStart: 20,
-                  fontSize: 16,
-                  marginBottom: 10,
-                  fontFamily: "open-sans-bold",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
               >
-                #{contract?.id}
-              </Text>
-              <Text
-                style={{
-                  paddingStart: 220,
-                  fontSize: 13,
-                  marginBottom: 10,
-                  fontFamily: "open-sans",
-                }}
-              >
-                {contract?.created_at.toString().substring(0, 10)}
-              </Text>
-            </View>
+                <Text
+                  style={{
+                    paddingStart: 20,
+                    fontSize: 16,
+                    marginBottom: 10,
+                    fontFamily: "open-sans-bold",
+                  }}
+                >
+                  #{contract?.id}
+                </Text>
+                <Text
+                  style={{
+                    paddingStart: 220,
+                    fontSize: 13,
+                    marginBottom: 10,
+                    fontFamily: "open-sans",
+                  }}
+                >
+                  {contract?.created_at.toString().substring(0, 10)}
+                </Text>
+              </View>
 
-            <View
-              style={{
-                paddingStart: 30,
-                marginBottom: 10,
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Icon name={"Hotel"} color={"black"} size={20} />
-              <Text
+              <View
                 style={{
-                  paddingStart: 10,
-                  fontSize: 14,
-                  fontFamily: "open-sans",
+                  paddingStart: 30,
+                  marginBottom: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
-                {contract?.rooms?.name} - {contract?.hostels?.name}
-              </Text>
-            </View>
-            <View
-              style={{
-                paddingStart: 30,
-                marginBottom: 10,
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Icon name={"CalendarDays"} color={"black"} size={20} />
-              <Text
+                <Icon name={"Hotel"} color={"black"} size={20} />
+                <Text
+                  style={{
+                    paddingStart: 10,
+                    fontSize: 14,
+                    fontFamily: "open-sans",
+                  }}
+                >
+                  {contract?.rooms?.name} - {contract?.hostels?.name}
+                </Text>
+              </View>
+              <View
                 style={{
-                  paddingStart: 10,
-                  fontSize: 14,
-                  fontFamily: "open-sans",
+                  paddingStart: 30,
+                  marginBottom: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
-                Từ {contract?.start_date.toString().substring(0, 10)} đến{" "}
-                {contract?.expired_date.toString().substring(0, 10)}
-              </Text>
-            </View>
-            <View
-              style={{
-                paddingStart: 30,
-                marginBottom: 10,
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Icon name={"User"} color={"black"} size={20} />
-              <Text
+                <Icon name={"CalendarDays"} color={"black"} size={20} />
+                <Text
+                  style={{
+                    paddingStart: 10,
+                    fontSize: 14,
+                    fontFamily: "open-sans",
+                  }}
+                >
+                  Từ {contract?.start_date.toString().substring(0, 10)} đến{" "}
+                  {contract?.expired_date.toString().substring(0, 10)}
+                </Text>
+              </View>
+              <View
                 style={{
-                  paddingStart: 10,
-                  fontSize: 14,
-                  fontFamily: "open-sans",
+                  paddingStart: 30,
+                  marginBottom: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
                 }}
               >
-                Nguời thuê: {contract?.manage_lessee?.name}
-              </Text>
-            </View>
-            <View
-              style={{
-                borderBottomColor: "black",
-                borderBottomWidth: StyleSheet.hairlineWidth,
-                marginTop: 20,
-                marginBottom: 20,
-              }}
-            />
-          </View>
-          <View >
-            <View
-              style={{
-                marginBottom: 10,
-              }}
-            >
-              <Text
+                <Icon name={"User"} color={"black"} size={20} />
+                <Text
+                  style={{
+                    paddingStart: 10,
+                    fontSize: 14,
+                    fontFamily: "open-sans",
+                  }}
+                >
+                  Nguời thuê: {contract?.manage_lessee?.name}
+                </Text>
+              </View>
+              <View
                 style={{
-                  fontSize: 14,
-                  fontFamily: "open-sans",
+                  borderBottomColor: "black",
+                  borderBottomWidth: StyleSheet.hairlineWidth,
+                  marginTop: 20,
+                  marginBottom: 20,
+                }}
+              />
+            </View>
+            <View>
+              <View
+                style={{
+                  marginBottom: 10,
                 }}
               >
-                Tiền phòng: {VND.format(Number(contract?.monthly_price))}
-              </Text>
-            </View>
-            <View
-              style={{
-                marginBottom: 10,
-              }}
-            >
-              <Text
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: "open-sans",
+                  }}
+                >
+                  Tiền phòng: {VND.format(Number(contract?.monthly_price))}
+                </Text>
+              </View>
+              <View
                 style={{
-                  fontSize: 14,
-                  fontFamily: "open-sans",
+                  marginBottom: 10,
                 }}
               >
-                Ngày thanh toán hằng tháng: {contract?.monthly_payment_day}
-
-              </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: "open-sans",
+                  }}
+                >
+                  Ngày thanh toán hằng tháng: {contract?.monthly_payment_day}
+                </Text>
+              </View>
             </View>
-          </View>
-          <Button
+            {/* <Button
             title={loading ? "Đang cập nhật" : "Cập nhật thông tin"}
             onPress={() => router.push('home/add_contract/')}
             buttonStyle={{
@@ -248,51 +254,25 @@ const add_lessee = () => {
               marginTop: 20,
             }}
             titleStyle={{ fontFamily: "open-sans" }}
-          />
-          <Button
-            title={loading ? "Loading ..." : "Xóa người thuê"}
-            onPress={() => delete_contract(id)}
-            buttonStyle={{
-              backgroundColor: colors.primary,
-              width: 320,
-              height: 50,
-              borderRadius: 30,
-              marginTop: 20,
-            }}
-            titleStyle={{ fontFamily: "open-sans" }}
-            disabled={loading}
-          />
-        </View>
+          /> */}
+            <Button
+              title={loading ? "Loading ..." : "Xóa hợp đồng"}
+              onPress={() => delete_contract(id)}
+              buttonStyle={{
+                backgroundColor: colors.primary,
+                width: 320,
+                height: 50,
+                borderRadius: 30,
+                marginTop: 20,
+              }}
+              titleStyle={{ fontFamily: "open-sans" }}
+              disabled={loading}
+            />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 };
 
 export default add_lessee;
-
-const styles = StyleSheet.create({
-  linkBtn: {
-    margin: 8,
-    alignItems: "center",
-
-    fontFamily: "open-sans",
-  },
-  containerInput: {
-    flexDirection: "row",
-    height: 50,
-    borderRadius: 30,
-    backgroundColor: "#DBDBDB",
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 10,
-    marginLeft: 30,
-    marginRight: 30,
-    paddingLeft: 20,
-    paddingRight: 10,
-  },
-  button: {
-    alignItems: "center",
-    backgroundColor: "#DDDDDD",
-    padding: 10,
-  },
-});

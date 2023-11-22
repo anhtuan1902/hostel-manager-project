@@ -126,7 +126,7 @@ const add_contract = () => {
         if (error) {
           throw console.log(error);
         } else {
-          router.replace("/home/manage_rental_contracts");
+          router.replace("/home/manage_contract");
         }
       }
     } catch (error) {
