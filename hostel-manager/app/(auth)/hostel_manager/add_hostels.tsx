@@ -86,7 +86,7 @@ const add_hostels = () => {
         };
         console.log(updates);
 
-        const { error } = await supabase.from("hostels").upsert(updates);
+        const { error } = await supabase.from("hostels").insert(updates);
 
         if (error) {
           throw console.log(error);

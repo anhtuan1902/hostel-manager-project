@@ -24,6 +24,7 @@ export default function Account({ session }: { session: Session }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [fullname, setFullname] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
+  const [selectAvatarUrl, setSelectAvatarUrl] = useState("");
 
   useEffect(() => {
     getProfile();
@@ -48,15 +49,16 @@ export default function Account({ session }: { session: Session }) {
       });
 
       await supabase.storage
-      .from("files")
-      .download(filePath)
-      .then(( {data} ) => {
-        const fr = new FileReader();
-        fr.readAsDataURL(data!);
-        fr.onload = () => {
-          setAvatarUrl(fr.result as string);
-        };
-      });
+        .from("files")
+        .download(filePath)
+        .then(({ data }) => {
+          const fr = new FileReader();
+          fr.readAsDataURL(data!);
+          fr.onload = () => {
+            console.log(fr.result as string);
+            setSelectAvatarUrl(fr.result as string);
+          };
+        });
     } else {
       alert("You did not select any image.");
     }
@@ -104,14 +106,16 @@ export default function Account({ session }: { session: Session }) {
       if (!session?.user) throw new Error("No user on the session!");
 
       const updates = {
-        id: session?.user.id,
         fullname: fullname,
         phone_number: phone_number,
         avatar_url: avatar_url,
         updated_at: new Date(),
       };
 
-      const { error } = await supabase.from("profiles").upsert(updates);
+      const { error } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", session?.user.id);
 
       if (error) {
         throw console.log(error);
@@ -130,7 +134,12 @@ export default function Account({ session }: { session: Session }) {
       <View style={styles.containerBtn}>
         <View style={{ marginRight: 70, width: 70 }}>
           <TouchableOpacity onPress={pickImageAsync}>
-            {avatarUrl ? (
+            {selectAvatarUrl ? (
+              <Image
+                source={{ uri: selectAvatarUrl }}
+                style={{ width: 110, height: 120, borderRadius: 50 }}
+              />
+            ) : avatarUrl ? (
               <Image
                 source={{ uri: avatarUrl }}
                 style={{ width: 110, height: 120, borderRadius: 50 }}
@@ -173,7 +182,7 @@ export default function Account({ session }: { session: Session }) {
               updateProfile({
                 fullname: fullname,
                 phone_number: phoneNumber,
-                avatar_url: avatarUrl,
+                avatar_url: selectAvatarUrl,
               })
             }
             disabled={loading}

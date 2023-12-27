@@ -17,35 +17,39 @@ import Icon from "../../../../components/Icon";
 import { useRouter } from "expo-router";
 import { supabase } from "../../../../utils/supabase";
 import { useAuth } from "../../../../provider/AuthProvider";
-import { Contract } from "../../../../provider/Database";
+import { Service } from "../../../../provider/Database";
 
-const manage_rental_contracts = () => {
+const manage_services = () => {
   const [search, setSearch] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [listContract, setListContract] = useState<Contract[]>([]);
+  const [listService, setListService] = useState<Service[]>([]);
   const { user } = useAuth();
 
+  const VND = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  });
+
   useEffect(() => {
-    getRentalContract();
+    getServices();
   }, []);
 
-  async function getRentalContract() {
+  async function getServices() {
     try {
       if (!user) throw new Error("No user on the session!");
 
-      const { data, error, status } = await supabase
-        .from("manage_rental_contract")
-        .select(
-          "*, manage_lessee(id, name), hostels(id, name, owner_id), rooms(id, name)"
-        )
-        .eq("hostels.owner_id", user.id);
+      
+      let { data: services, error, status } = await supabase
+        .from('services')
+        .select('*')
+        .eq("owner_id", user.id);
 
       if (error && status !== 406) {
         throw error;
       }
-      if (data) {
-        setListContract(data);
+      if (services) {
+        setListService(services);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -63,81 +67,35 @@ const manage_rental_contracts = () => {
           style={styles.containerBtn}
           onPress={() => {
             router.push({
-              pathname: "/home/manage_contract/detail_contract",
+              pathname: "/home/manage_service/detail_service",
               params: { id: item.item.id },
             });
           }}
         >
           <View>
-            <View style={{ flexDirection: 'row', justifyContent:"space-between"}}>
-            <Text
-              style={{
-                fontSize: 16,
-                marginBottom: 10,
-                fontFamily: "open-sans-bold",
-                marginStart: 30,
-                width: 100
-              }}
-            >
-              #{item.item.id}
-            </Text>
-            </View>
             <View
               style={{
-                paddingStart: 30,
-                marginBottom: 10,
-                flexDirection: "row",
-                alignItems: "center",
+                alignItems: 'center',
+                width: 150,
               }}
             >
-              <Icon name={"Hotel"} color={"black"} size={20} />
+              <Icon name={item.item.icon} color={"black"} size={50} />
               <Text
                 style={{
-                  paddingStart: 10,
                   fontSize: 14,
                   fontFamily: "open-sans",
+                  marginTop: 10
                 }}
               >
-                {item.item.rooms.name} - {item.item.hostels.name}
+                {item.item.name}
               </Text>
-            </View>
-            <View
-              style={{
-                paddingStart: 30,
-                marginBottom: 10,
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Icon name={"CalendarDays"} color={"black"} size={20} />
               <Text
                 style={{
-                  paddingStart: 10,
                   fontSize: 14,
                   fontFamily: "open-sans",
                 }}
               >
-                Từ {item.item.start_date.toString().substring(0, 10)} đến{" "}
-                {item.item.expired_date.toString().substring(0, 10)}
-              </Text>
-            </View>
-            <View
-              style={{
-                paddingStart: 30,
-                marginBottom: 10,
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Icon name={"User"} color={"black"} size={20} />
-              <Text
-                style={{
-                  paddingStart: 10,
-                  fontSize: 14,
-                  fontFamily: "open-sans",
-                }}
-              >
-                Nguời thuê: {item.item.manage_lessee.name}
+                {VND.format(item.item.price)}
               </Text>
             </View>
           </View>
@@ -150,16 +108,16 @@ const manage_rental_contracts = () => {
     <View style={styles.container}>
       <StatusBar backgroundColor={colors.primary} style="light" />
       <View style={styles.body}>
-        <SearchBar placeholder="Tìm kiếm mã hợp đồng" onTextChange={setSearch} />
+        <SearchBar placeholder="Tìm kiếm dịch vụ" onTextChange={setSearch} />
 
         {loading ? (
           <ActivityIndicator color={colors.primary} animating={loading} />
         ) : (
           <FlatList
-            data={listContract.filter( contract => contract.id.toString().includes(search))}
+            data={listService.filter( service => service.id.toString().includes(search))}
             renderItem={renderItem}
             keyExtractor={(item, index) => index.toString()}
-            numColumns={1}
+            numColumns={2}
           />
         )}
       </View>
@@ -171,7 +129,7 @@ const manage_rental_contracts = () => {
             borderRadius: 50,
           }}
           onPress={() => {
-            router.push("/home/manage_contract/add_contract");
+            router.push("/home/manage_service/add_service");
           }}
         >
           <Icon name="Plus" color={colors.white} size={50} />
@@ -181,7 +139,7 @@ const manage_rental_contracts = () => {
   );
 };
 
-export default manage_rental_contracts;
+export default manage_services;
 
 const styles = StyleSheet.create({
   container: {
@@ -198,40 +156,19 @@ const styles = StyleSheet.create({
   body: {
     flex: 8,
     marginTop: 20,
+    marginHorizontal: 30,
     alignItems: "center",
-    marginHorizontal: 20,
   },
   foorer: {
     flex: 1,
     alignSelf: "flex-end",
     marginEnd: 20,
   },
-  containerCard: {
-    backgroundColor: "#fff",
-    width: 320,
-    height: 180,
-    justifyContent: "center",
-    borderRadius: 10,
-    padding: 20,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-  },
-
-  cardNumber: {
-    fontSize: 14,
-    color: "#023047",
-    alignSelf: "center",
-    marginTop: 10,
-  },
   containerBtn: {
-    marginTop: 10,
-    marginBottom: 8,
+    margin: 10,
     flexDirection: "row",
     backgroundColor: "#fff",
-    width: 320,
+    width: 150,
     height: 150,
     alignItems: "center",
     borderRadius: 20,

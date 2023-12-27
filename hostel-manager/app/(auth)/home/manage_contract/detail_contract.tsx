@@ -3,30 +3,29 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Alert,
-  Image,
   ActivityIndicator,
+  Modal,
+  TouchableOpacity,
+  TextInput,
 } from "react-native";
 import { useAuth } from "../../../../provider/AuthProvider";
-import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../../../../utils/supabase";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
 import { colors } from "../../../../constants/colors";
-import InputWithIcon from "../../../../components/InputWithIcon";
 import { Button } from "react-native-elements";
-import * as FileSystem from "expo-file-system";
-import { decode } from "base64-arraybuffer";
 import { Contract } from "../../../../provider/Database";
 import Icon from "../../../../components/Icon";
+import DateRangeComponent from "../../../../components/DateRange";
 
-const add_lessee = () => {
+const detail_contract = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [contract, setContract] = useState<Contract>();
+  const [note, setNote] = useState("");
   const { user } = useAuth();
   const params = useLocalSearchParams();
   const { id } = params;
@@ -36,10 +35,10 @@ const add_lessee = () => {
   });
 
   useEffect(() => {
-    getLessee(id);
+    getContract(id);
   }, []);
 
-  async function getLessee(id: any) {
+  async function getContract(id: any) {
     try {
       if (!user) throw new Error("No user on the session!");
 
@@ -93,14 +92,13 @@ const add_lessee = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar />
-      <ScrollView style={{ flex: 1, marginBottom: 20 }}>
+      <ScrollView style={{ flex: 1, marginBottom: 20, marginHorizontal: 10 }}>
         {loading ? (
           <ActivityIndicator color={colors.primary} animating={loading} />
         ) : (
           <View
             style={{
-              paddingHorizontal: 10,
-              marginTop: 10,
+              paddingHorizontal: 30,
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -108,14 +106,14 @@ const add_lessee = () => {
             <Text
               style={{
                 color: colors.primary,
-                fontSize: 42,
+                fontSize: 36,
                 fontWeight: "500",
                 marginBottom: 10,
                 marginTop: 10,
                 fontFamily: "open-sans",
               }}
             >
-              Thông tin chi tiết
+              Thông tin hợp đồng
             </Text>
             <View style={{ marginTop: 30 }}>
               <View
@@ -136,9 +134,9 @@ const add_lessee = () => {
                 </Text>
                 <Text
                   style={{
-                    paddingStart: 220,
                     fontSize: 13,
                     marginBottom: 10,
+                    marginEnd: 20,
                     fontFamily: "open-sans",
                   }}
                 >
@@ -148,7 +146,7 @@ const add_lessee = () => {
 
               <View
                 style={{
-                  paddingStart: 30,
+                  paddingStart: 20,
                   marginBottom: 10,
                   flexDirection: "row",
                   alignItems: "center",
@@ -167,7 +165,7 @@ const add_lessee = () => {
               </View>
               <View
                 style={{
-                  paddingStart: 30,
+                  paddingStart: 20,
                   marginBottom: 10,
                   flexDirection: "row",
                   alignItems: "center",
@@ -187,7 +185,7 @@ const add_lessee = () => {
               </View>
               <View
                 style={{
-                  paddingStart: 30,
+                  paddingStart: 20,
                   marginBottom: 10,
                   flexDirection: "row",
                   alignItems: "center",
@@ -206,55 +204,60 @@ const add_lessee = () => {
               </View>
               <View
                 style={{
+                  paddingHorizontal: 25,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: "open-sans",
+                    marginBottom: 10,
+                  }}
+                >
+                  Tiền phòng: {VND.format(Number(contract?.monthly_price))}
+                </Text>
+
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: "open-sans",
+                    marginBottom: 10,
+                  }}
+                >
+                  Ngày thanh toán hằng tháng:{" "}
+                  {contract?.monthly_payment_day.toString().substring(0, 10)}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    fontFamily: "open-sans",
+                    marginBottom: 10,
+                  }}
+                >
+                  Trạng thái hợp đồng:{" "}
+                  {contract?.completed ? "Đã hoàn tất" : "Chưa hoàn tất"}
+                </Text>
+              </View>
+              <View
+                style={{
                   borderBottomColor: "black",
                   borderBottomWidth: StyleSheet.hairlineWidth,
                   marginTop: 20,
                   marginBottom: 20,
                 }}
               />
+              <DateRangeComponent
+                contractId={id}
+                lessees={contract?.manage_lessee}
+                start_date={contract?.start_date}
+                expired_date={contract?.expired_date}
+                completed={contract?.completed}
+                monthly_payment_day={contract?.monthly_payment_day}
+                hostels={contract?.hostels}
+                rooms={contract?.rooms}
+              />
             </View>
-            <View>
-              <View
-                style={{
-                  marginBottom: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontFamily: "open-sans",
-                  }}
-                >
-                  Tiền phòng: {VND.format(Number(contract?.monthly_price))}
-                </Text>
-              </View>
-              <View
-                style={{
-                  marginBottom: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontFamily: "open-sans",
-                  }}
-                >
-                  Ngày thanh toán hằng tháng: {contract?.monthly_payment_day}
-                </Text>
-              </View>
-            </View>
-            {/* <Button
-            title={loading ? "Đang cập nhật" : "Cập nhật thông tin"}
-            onPress={() => router.push('home/add_contract/')}
-            buttonStyle={{
-              backgroundColor: colors.primary,
-              width: 320,
-              height: 50,
-              borderRadius: 30,
-              marginTop: 20,
-            }}
-            titleStyle={{ fontFamily: "open-sans" }}
-          /> */}
+
             <Button
               title={loading ? "Loading ..." : "Xóa hợp đồng"}
               onPress={() => delete_contract(id)}
@@ -275,4 +278,4 @@ const add_lessee = () => {
   );
 };
 
-export default add_lessee;
+export default detail_contract;

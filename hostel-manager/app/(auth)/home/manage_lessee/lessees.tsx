@@ -17,17 +17,19 @@ import Icon from "../../../../components/Icon";
 import { useRouter } from "expo-router";
 import { supabase } from "../../../../utils/supabase";
 import { useAuth } from "../../../../provider/AuthProvider";
-import { Lessee } from "../../../../provider/Database";
+import { Contract, Lessee } from "../../../../provider/Database";
 
 const manage_lessee = () => {
   const [search, setSearch] = useState("");
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [listLessee, setListLessee] = useState<Lessee[]>([]);
+  const [listContract, setContract] = useState<Contract[]>([]);
   const { user } = useAuth();
 
   useEffect(() => {
     getLessee();
+    getContract()
   }, []);
 
   async function getLessee() {
@@ -53,6 +55,30 @@ const manage_lessee = () => {
     }
   }
 
+  async function getContract() {
+    try {
+      if (!user) throw new Error("No user on the session!");
+
+      const { data, error, status } = await supabase
+        .from("manage_rental_contract")
+        .select(
+          "*, manage_lessee(id, name), hostels(id, name, owner_id), rooms(id, name)"
+        );
+
+      if (error && status !== 406) {
+        throw error;
+      }
+      if (data) {
+        setContract(data);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
   const renderItem = (item: any) => {
     return (
       <ScrollView>
@@ -113,7 +139,7 @@ const manage_lessee = () => {
                 fontFamily: "open-sans",
               }}
             >
-              {item.item.citizen_id}
+              Số điện thoại: {item.item.phone_number}
             </Text>
             <Text
               style={{
@@ -123,7 +149,7 @@ const manage_lessee = () => {
                 fontFamily: "open-sans",
               }}
             >
-              {item.item.phone_number}
+              { listContract.filter(index => index.lessee_id === item.item.id).map(index => `${index.rooms?.name} - ${index.hostels?.name}`) }
             </Text>
           </View>
         </TouchableOpacity>

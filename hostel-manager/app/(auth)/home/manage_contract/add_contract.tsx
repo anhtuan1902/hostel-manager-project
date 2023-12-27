@@ -15,7 +15,7 @@ import { StatusBar } from "expo-status-bar";
 import { ScrollView } from "react-native-gesture-handler";
 import { colors } from "../../../../constants/colors";
 import { Button } from "react-native-elements";
-import { Hostel, Lessee, Room } from "../../../../provider/Database";
+import { Contract, Hostel, Lessee, Room } from "../../../../provider/Database";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
@@ -25,7 +25,7 @@ const add_contract = () => {
   const [lesseeId, setLesseeId] = useState();
   const [hostelId, setHostelId] = useState();
   const [room, setRoom] = useState<Room>();
-  const [monthlyPaymentDay, setMonthlyPaymentDay] = useState(0);
+  const [monthlyPaymentDay, setMonthlyPaymentDay] = useState(new Date());
   const [startDate, setStartDate] = useState(new Date());
   const [expiredDate, setExpiredDate] = useState(new Date());
   const [file_url, setFileUrl] = useState<string>("");
@@ -33,9 +33,13 @@ const add_contract = () => {
   const [listLessee, setListLessee] = useState<Lessee[]>([]);
   const [listHostel, setListHostel] = useState<Hostel[]>([]);
   const [listRoom, setListRoom] = useState<Room[]>([]);
+  const [contract, setContract] = useState<Contract[]>([]);
+
   const [isStartDatePickerVisible, setStartDatePickerVisibility] =
     useState(false);
   const [isExpirediDatePickerVisible, setExpiredStartDatePickerVisibility] =
+    useState(false);
+  const [isMonthonlyPaymentDatePickerVisible, setMonthonlyPaymentDatePickerVisible] =
     useState(false);
 
   useEffect(() => {
@@ -60,6 +64,15 @@ const add_contract = () => {
         .from("rooms")
         .select("*, hostels(id, owner_id)")
         .eq("hostels.owner_id", user.id);
+
+      const { data: contracts } = await supabase
+        .from("manage_rental_contract")
+        .select("*, hostels(id, owner_id)")
+        .eq("hostels.owner_id", user.id);
+
+      if (contracts) {
+        setContract(contracts);
+      }
 
       if (lessees && hostels && rooms) {
         setListLessee(lessees);
@@ -106,8 +119,9 @@ const add_contract = () => {
         expired_date === null
       ) {
         Alert.alert("Please enter information!");
+      } else if (monthly_payment_day <= expiredDate.getDay() + 7) {
+        Alert.alert("Please input payment date lesser than 7 days!");
       } else {
-
         const data = {
           lessee_id: lessee_id,
           monthly_payment_day: monthly_payment_day,
@@ -183,7 +197,7 @@ const add_contract = () => {
                 fontSize: 14,
               }}
             >
-              Chọn nhà trọ:{" "}
+              Chọn nhà trọ
             </Text>
             <Text
               style={{
@@ -236,8 +250,11 @@ const add_contract = () => {
             >
               {listRoom
                 .filter((item) => {
-                  return item.hostel_id == hostelId;
+                  return item.hostel_id === hostelId;
                 })
+                .filter(
+                  (item) => !contract.map((i) => i.room_id).includes(item.id)
+                )
                 .map((item) => (
                   <Picker.Item
                     key={item.id}
@@ -370,7 +387,12 @@ const add_contract = () => {
               }
             />
           </TouchableOpacity>
-          <View style={styles.containerBtn}>
+          <TouchableOpacity
+            style={styles.containerBtn}
+            onPress={() => {
+              setMonthonlyPaymentDatePickerVisible(true);
+            }}
+          >
             <Text
               style={{
                 paddingStart: 10,
@@ -379,7 +401,7 @@ const add_contract = () => {
                 fontSize: 14,
               }}
             >
-              Nhập ngày thanh toán
+              Chọn ngày thanh toán
             </Text>
             <Text
               style={{
@@ -389,13 +411,26 @@ const add_contract = () => {
             >
               :
             </Text>
-            <TextInput
-              autoCapitalize="none"
-              style={styles.textField}
-              keyboardType="numeric"
-              onChangeText={(text) => setMonthlyPaymentDay(Number(text))}
+            <Text style={{ width: 180, paddingStart: 20 }}>
+              {monthlyPaymentDay.toLocaleDateString("VI")}
+            </Text>
+            <DateTimePickerModal
+              isVisible={isMonthonlyPaymentDatePickerVisible}
+              mode="date"
+              onConfirm={(date) => {
+                setMonthlyPaymentDay(date);
+                setMonthonlyPaymentDatePickerVisible(
+                  !isMonthonlyPaymentDatePickerVisible
+                );
+              }}
+              minimumDate={startDate}
+              onCancel={() =>
+                setMonthonlyPaymentDatePickerVisible(
+                  !isMonthonlyPaymentDatePickerVisible
+                )
+              }
             />
-          </View>
+          </TouchableOpacity>
           <View style={styles.containerBtn}>
             <Text
               style={{

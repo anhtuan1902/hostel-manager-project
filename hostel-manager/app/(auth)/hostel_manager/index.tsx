@@ -151,34 +151,15 @@ const styles = StyleSheet.create({
   body: {
     flex: 8,
     marginTop: 20,
+    marginHorizontal: 30,
     alignItems: "center",
-    marginHorizontal: 20,
   },
   foorer: {
     flex: 1,
     alignSelf: "flex-end",
     marginEnd: 20,
   },
-  containerCard: {
-    backgroundColor: "#fff",
-    width: 350,
-    height: 180,
-    justifyContent: "center",
-    borderRadius: 10,
-    padding: 20,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-  },
 
-  cardNumber: {
-    fontSize: 14,
-    color: "#023047",
-    alignSelf: "center",
-    marginTop: 10,
-  },
   containerBtn: {
     margin: 10,
     backgroundColor: "#fff",

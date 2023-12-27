@@ -29,6 +29,12 @@ const HomeLayout = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="manage_service"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };

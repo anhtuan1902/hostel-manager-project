@@ -118,7 +118,7 @@ export default function home() {
                 fontFamily: "open-sans",
               }}
             >
-              Xin chao,
+              Xin chào,
             </Text>
             <Text
               style={{
@@ -186,20 +186,22 @@ export default function home() {
             </View>
             <View style={{ width: 120 }}>
               <Text style={styles.cardNumber}>Số phòng trống</Text>
-              <Text style={styles.cardNumber}>{listRoom.length - listContract.length}</Text>
+              <Text style={styles.cardNumber}>{ listRoom.length - listContract.length > 0 ? listRoom.length - listContract.length : 0}</Text>
             </View>
           </View>
         </View>
         <View style={{ marginTop: 10 }}>
-          <ButtonRectangleWithIcon
+          {/* <ButtonRectangleWithIcon
             icon="TableProperties"
             colorIcon="black"
             sizeIcon={24}
             height={60}
             width={300}
             title="Quản lí dịch vụ"
-            onTap={tap}
-          />
+            onTap={() => {
+              router.push("/home/manage_service");
+            }}
+          /> */}
           <ButtonRectangleWithIcon
             icon="Users2"
             colorIcon="black"
