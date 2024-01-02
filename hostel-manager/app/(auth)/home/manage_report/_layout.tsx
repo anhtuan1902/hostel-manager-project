@@ -1,0 +1,49 @@
+import React from "react";
+import { Stack, router } from "expo-router";
+import { Text, TouchableOpacity, View } from "react-native";
+import { colors } from "../../../../constants/colors";
+
+const ContractLayout = () => {
+  return (
+    <Stack
+      screenOptions={{
+        headerShown: true,
+        headerTitleStyle: { fontFamily: "open-sans" },
+      }}
+      initialRouteName="manage_reports"
+    >
+      <Stack.Screen
+        name="manage_reports"
+        options={{
+          headerTitle: "Quản lí báo cáo",
+          headerTitleAlign: "center",
+          headerStyle: {
+            backgroundColor: colors.primary,
+          },
+          navigationBarHidden: true,
+          presentation: "modal",
+          headerTintColor: colors.white,
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => {
+                router.back();
+              }}
+            >
+              <View>
+                <Text
+                  style={{
+                    color: colors.white,
+                  }}
+                >
+                  Quay lại
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ),
+        }}
+      />
+    </Stack>
+  );
+};
+
+export default ContractLayout;

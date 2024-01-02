@@ -231,7 +231,9 @@ export default function home() {
             height={60}
             width={300}
             title="Quản lí chi tiêu"
-            onTap={tap}
+            onTap={() => {
+              router.push("/home/manage_report");
+            }}
           />
           <ButtonRectangleWithIcon
             icon="FileText"

@@ -59,11 +59,15 @@ export interface Service {
 
 export interface PaymentPeriod {
     id: number,
+    created_at: Date,
     lessee_id: number,
     hostel_id: number,
     room_id: number,
     contract_id: number,
     value: number,
     note?: string,
-    period_of_contract: number
+    period_of_contract: number,
+    hostels?: Hostel,
+    rooms?: Room,
+    manage_lessee?: Lessee,
 }

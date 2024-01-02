@@ -29,8 +29,14 @@ const HomeLayout = () => {
           headerShown: false,
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="manage_service"
+        options={{
+          headerShown: false,
+        }}
+      /> */}
+      <Stack.Screen
+        name="manage_report"
         options={{
           headerShown: false,
         }}
