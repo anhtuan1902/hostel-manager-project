@@ -235,7 +235,7 @@ export default function home() {
               router.push("/home/manage_report");
             }}
           />
-          <ButtonRectangleWithIcon
+          {/* <ButtonRectangleWithIcon
             icon="FileText"
             colorIcon="black"
             sizeIcon={24}
@@ -243,7 +243,7 @@ export default function home() {
             width={300}
             title="Quản lí báo cáo"
             onTap={tap}
-          />
+          /> */}
         </View>
       </View>
     </View>

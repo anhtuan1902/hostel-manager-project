@@ -8,46 +8,65 @@ const PwReset = () => {
   const [emailAddress, setEmailAddress] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
+  const [otp, setOtp] = useState("");
   const [successfulCreation, setSuccessfulCreation] = useState(false);
+  const [verifyOTP, setVerifyOTP] = useState(false);
 
-  useEffect(() => {
-    supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event == "PASSWORD_RECOVERY") {
-        setSuccessfulCreation(true);
-      }
-    });
-  }, []);
-
-  // Request a passowrd reset code by email
+  // Request a  resepassowrdt code by email
   const onRequestReset = async () => {
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(emailAddress);
-      if (error) {
-        console.log("Không tồn tại email đăng kí!", error);
+      const { error: otpError } = await supabase.auth.resetPasswordForEmail(
+        emailAddress
+      );
+      if (otpError) {
+        console.error(otpError);
+      } else {
+        setVerifyOTP(true);
       }
     } catch (err: any) {
-      alert(err.errors[0].message);
+      Alert.alert(err.errors[0].message);
+    }
+  };
+
+  const confirmOTP = async () => {
+    try {
+      const { error } = await supabase.auth.verifyOtp({
+        email: emailAddress,
+        token: otp,
+        type: "email",
+      });
+      if (error) {
+        Alert.alert(error.message);
+      } else {
+        onReset();
+      }
+    } catch (err: any) {
+      Alert.alert(err.errors[0].message);
     }
   };
 
   // Reset the password with the code and the new password
   const onReset = async () => {
     try {
-      if (password === passwordConfirm) {
-        const { data, error } = await supabase.auth.updateUser({
-          password: password,
-        });
+      const { data, error } = await supabase.auth.updateUser({
+        password: password,
+      });
+      if (error)
+        Alert.alert("Có lỗi gì đó khi cập nhật mật khẩu! Thử lại sau!");
+    } catch (err: any) {
+      Alert.alert(err.errors[0].message);
+    }
+  };
 
-        if (data) {
-          router.push("/login");
-          Alert.alert("Cập nhật mật khẩu thành công!");
-        }
-        if (error) alert("Có lỗi gì đó khi cập nhật mật khẩu! Thử lại sau!");
+  const textRequired = () => {
+    if (password !== "" && passwordConfirm !== "") {
+      if (password === passwordConfirm) {
+        setSuccessfulCreation(true);
       } else {
         Alert.alert("Mật khẩu không khớp với nhau!");
       }
-    } catch (err: any) {
-      Alert.alert(err.errors[0].message);
+    } else {
+      Alert.alert("Vui lòng nhập tất cả thông tin");
     }
   };
 
@@ -55,7 +74,7 @@ const PwReset = () => {
     <View style={styles.container}>
       <Stack.Screen options={{ headerBackVisible: !successfulCreation }} />
 
-      {!successfulCreation && (
+      {successfulCreation ? (
         <>
           <Text
             style={{
@@ -65,20 +84,20 @@ const PwReset = () => {
               color: colors.primary,
             }}
           >
-            Xác thực Email
+            Xác nhận OTP
           </Text>
           <TextInput
             autoCapitalize="none"
-            placeholder="abc@gmail.com"
-            value={emailAddress}
-            onChangeText={setEmailAddress}
+            placeholder="mã 6 số"
+            value={otp}
+            onChangeText={setOtp}
             style={styles.inputField}
           />
 
           <View style={{ marginTop: 20 }}>
             <Button
-              onPress={onRequestReset}
-              title="Gửi email xác nhận"
+              onPress={confirmOTP}
+              title="Xác nhận"
               color={colors.primary}
             ></Button>
           </View>
@@ -92,9 +111,7 @@ const PwReset = () => {
             ></Button>
           </View>
         </>
-      )}
-
-      {successfulCreation && (
+      ) : verifyOTP ? (
         <>
           <View>
             <Text
@@ -124,8 +141,45 @@ const PwReset = () => {
           </View>
           <View style={{ marginTop: 20 }}>
             <Button
-              onPress={onReset}
+              onPress={textRequired}
               title="Đặt mật khẩu mới"
+              color={colors.primary}
+            ></Button>
+          </View>
+          <View style={{ marginTop: 20 }}>
+            <Button
+              title="quay lại"
+              onPress={() => {
+                router.back();
+              }}
+              color={colors.primary}
+            ></Button>
+          </View>
+        </>
+      ) : (
+        <>
+          <Text
+            style={{
+              fontSize: 30,
+              marginBottom: 20,
+              fontFamily: "open-sans-bold",
+              color: colors.primary,
+            }}
+          >
+            Xác thực Email
+          </Text>
+          <TextInput
+            autoCapitalize="none"
+            placeholder="abc@gmail.com"
+            value={emailAddress}
+            onChangeText={setEmailAddress}
+            style={styles.inputField}
+          />
+
+          <View style={{ marginTop: 20 }}>
+            <Button
+              onPress={onRequestReset}
+              title="Gửi email xác nhận"
               color={colors.primary}
             ></Button>
           </View>

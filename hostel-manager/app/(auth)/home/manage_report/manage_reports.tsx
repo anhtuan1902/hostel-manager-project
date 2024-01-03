@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 import GroupedBars from "../../../../components/IncomeBar";
 import { colors } from "../../../../constants/colors";
 import { supabase } from "../../../../utils/supabase";
@@ -50,20 +50,36 @@ const manage_reports = () => {
 
   return (
     <View style={styles.container}>
-      <GroupedBars data={listPayment} />
-      
-      <View style={styles.containerHistory}>
-        <Text style={styles.textHistory}>Lịch sử giao dịch</Text>
-        {listPayment.map((transaction) => (
-          <View key={transaction.id} style={styles.transaction}>
-            <View>
-            <Text style={styles.transactionDate}>{transaction.created_at.toString().substring(0, 10)}</Text>
-            <Text style={styles.transactionText}>{transaction.manage_lessee?.name} - {transaction.rooms?.name} - {transaction.hostels?.name} - Kì {transaction.period_of_contract}</Text>
-            </View>
-            <Text style={styles.transactionAmount}>{transaction.value > 0 ? `+ ${VND.format(Number(transaction.value))}` : `- ${VND.format(Number(transaction.value))}`}</Text>
+      {loading ? (
+        <ActivityIndicator style={{ marginTop: 50 }} color={colors.primary} animating={loading} />
+      ) : (
+        <>
+          <GroupedBars data={listPayment} />
+
+          <View style={styles.containerHistory}>
+            <Text style={styles.textHistory}>Lịch sử giao dịch</Text>
+            {listPayment.map((transaction) => (
+              <View key={transaction.id} style={styles.transaction}>
+                <View>
+                  <Text style={styles.transactionDate}>
+                    {transaction.created_at.toString().substring(0, 10)}
+                  </Text>
+                  <Text style={styles.transactionText}>
+                    {transaction.manage_lessee?.name} -{" "}
+                    {transaction.rooms?.name} - {transaction.hostels?.name} - Kì{" "}
+                    {transaction.period_of_contract}
+                  </Text>
+                </View>
+                <Text style={styles.transactionAmount}>
+                  {transaction.value > 0
+                    ? `+ ${VND.format(Number(transaction.value))}`
+                    : `- ${VND.format(Number(transaction.value))}`}
+                </Text>
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
+        </>
+      )}
     </View>
   );
 };

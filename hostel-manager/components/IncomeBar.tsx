@@ -132,13 +132,12 @@ const GroupedBars: React.FC = () => {
     }
   });
 
-  listPayment.map(
+  listPayment.filter((item) => parseInt(item.created_at.toString().substring(0, 4), 10) == today.getFullYear()).map(
     (item) =>
       (barData[
         (parseInt(item.created_at.toString().substring(5, 7), 10) - 1) * 2
       ].value += item.value)
   );
-
   useEffect(() => {
     getPayment();
   }, []);
