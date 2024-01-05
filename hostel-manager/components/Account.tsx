@@ -19,17 +19,22 @@ import * as FileSystem from "expo-file-system";
 import { decode } from "base64-arraybuffer";
 
 export default function Account({ session }: { session: Session }) {
+  // Get the authenticated user from the AuthProvider
   const { user } = useAuth();
+
+  // Define the component's state variables
   const [loading, setLoading] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [fullname, setFullname] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [selectAvatarUrl, setSelectAvatarUrl] = useState("");
 
+  // Fetch the user's profile information when the component mounts
   useEffect(() => {
     getProfile();
   }, []);
 
+  // Allow the user to select an avatar image from their device's image library
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -44,10 +49,13 @@ export default function Account({ session }: { session: Session }) {
       });
       const filePath = `${user!.id}/${new Date().getTime()}.png`;
       const contentType = "image/png";
+
+      // Upload the selected image to Supabase Storage
       await supabase.storage.from("files").upload(filePath, decode(base64), {
         contentType,
       });
 
+      // Download the uploaded image and set it as the selected avatar image
       await supabase.storage
         .from("files")
         .download(filePath)
@@ -64,6 +72,7 @@ export default function Account({ session }: { session: Session }) {
     }
   };
 
+  // Fetch the user's profile information from the Supabase database
   async function getProfile() {
     try {
       setLoading(true);
@@ -79,6 +88,7 @@ export default function Account({ session }: { session: Session }) {
       }
 
       if (data) {
+        // Update the component's state with the retrieved data
         setFullname(data.fullname);
         setPhoneNumber(data.phone_number);
         setAvatarUrl(data.avatar_url);
@@ -92,6 +102,7 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
+  // Update the user's profile information in the Supabase database
   async function updateProfile({
     fullname,
     phone_number,
@@ -112,6 +123,7 @@ export default function Account({ session }: { session: Session }) {
         updated_at: new Date(),
       };
 
+      // Update the user's profile information in the Supabase database
       const { error } = await supabase
         .from("profiles")
         .update(updates)
@@ -131,6 +143,7 @@ export default function Account({ session }: { session: Session }) {
 
   return (
     <>
+      {/* Display the user's avatar image, name, and phone number */}
       <View style={styles.containerBtn}>
         <View style={{ marginRight: 70, width: 70 }}>
           <TouchableOpacity onPress={pickImageAsync}>
@@ -156,6 +169,8 @@ export default function Account({ session }: { session: Session }) {
           </Text>
         </View>
       </View>
+
+      {/* Allow the user to update their profile information */}
       <ScrollView>
         <View style={[styles.verticallySpaced, styles.mt20]}>
           <Input label="Email" value={session?.user?.email} disabled />
@@ -193,6 +208,7 @@ export default function Account({ session }: { session: Session }) {
   );
 }
 
+// Define the component's styles using the StyleSheet API from React Native
 const styles = StyleSheet.create({
   verticallySpaced: {
     paddingBottom: 4,

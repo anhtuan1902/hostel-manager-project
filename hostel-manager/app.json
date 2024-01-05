@@ -48,11 +48,8 @@
         "origin": false
       },
       "eas": {
-        "projectId": "92d1dc69-c50b-4c48-a2b5-f9790528f3ba"
+        "projectId": "c6ecbfd7-eeb2-49b7-964a-04801dddd704"
       }
-    },
-    "updates": {
-      "url": "https://u.expo.dev/92d1dc69-c50b-4c48-a2b5-f9790528f3ba"
     }
   }
 }
